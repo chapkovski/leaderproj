@@ -1,0 +1,197 @@
+{{ extends 'otree/Page.html' }}
+{{ block title }}
+Page title
+{{ endblock }}
+{{ block body_main }}
+{% include 'otree/includes/TimeLimit.js.html' %}
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-3 overflow-auto  vh-100">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div>
+
+
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Full instructions
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Full instructions</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {{include 'leader/includes/full_instructions.html'}}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </nav>
+            <div class="card">
+                <div class="card-header">Short instructions</div>
+                <div class="card-body">
+                    <div class="card-text">
+                        {{include 'leader/includes/short_instructions.html'}}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-9">
+            <div class="w-100 vh-100 d-flex flex-column">
+                <div class="row h-50 d-inline-block w-100 " id="chartwrapper">
+
+                    <div id="container"></div>
+                    <script>
+                        var chart = new Highcharts.chart(
+                            {
+                                exporting: {
+                                    enabled: false
+                                }, credits: {
+                                    enabled: false
+                                },
+                                chart: {
+
+
+                                    renderTo: 'container',
+                                    type: 'line',
+
+                                    height: "400px"
+                                },
+                                title: {
+                                    text: 'Current graph here'
+                                },
+                                subtitle: {
+                                    text: 'Subtitle'
+                                },
+                                xAxis: {
+                                    reversed: false,
+                                    title: {
+                                        enabled: true,
+                                        text: 'Y AXIS'
+                                    },
+                                    labels: {
+                                        format: '{value} km'
+                                    },
+                                    accessibility: {
+                                        rangeDescription: 'Range: 0 to 80 km.'
+                                    },
+                                    maxPadding: 0.05,
+                                    showLastLabel: true
+                                },
+                                yAxis: {
+                                    title: {
+                                        text: 'X AXIS'
+                                    },
+                                    labels: {
+                                        format: '{value}°'
+                                    },
+                                    accessibility: {
+                                        rangeDescription: 'Range: -90°C to 20°C.'
+                                    },
+                                    lineWidth: 2
+                                },
+                                legend: {
+                                    enabled: false
+                                },
+                                tooltip: {
+                                    headerFormat: '<b>{series.name}</b><br/>',
+                                    pointFormat: '{point.x} km: {point.y}°C'
+                                },
+                                plotOptions: {
+                                    spline: {
+                                        marker: {
+                                            enable: false
+                                        }
+                                    }
+                                },
+                                series: [{
+                                    name: 'Y AXIS',
+                                    data: [517, 494, 459, 438, 492, 503, 471, 479, 485, 459, 490, 386, 462, 471, 485, 448, 405, 438, 425, 408, 505, 519, 563, 570, 532, 670, 615, 563, 568, 626, 655, 750, 662, 579, 614, 502, 499, 535, 485, 493, 519, 502, 492, 527, 524, 490]
+                                }]
+                            },
+                            function (chart) {
+
+                                var setHeight = function () {
+                                    let box = document.getElementById('chartwrapper');
+                                    let width = box.offsetWidth;
+                                    let height = box.offsetHeight;
+                                    chart.setSize(width, height - 20);
+                                }
+
+                                $(window).resize(setHeight);
+
+                                setHeight();
+                            });
+                    </script>
+
+                </div>
+                <div class="row d-flex flex-grow-1">
+                    <div class="col-6 flex-grow-1  my-3 ">
+                        {{chat nickname=player.role }}
+                    </div>
+                    <div class="col-6 flex-grow-1 d-flex flex-column">
+                        <div class="card flex-grow-1 my-3">
+                            <div class="card-header">Info:</div>
+                            <div class="card-body">
+                                <form class="otree-form" method="post" role="form" id="form" autocomplete="off"></form>
+                                <ul class="list-group list-group-flush">
+                                    {% include 'otree/includes/TimeLimit.html' %}
+                                    <li class="list-group-item d-flex ">
+                                        <div class="me-auto">Round number:</div>
+                                        <span class="badge bg-primary rounded-pill">{{view.round_number}}</span></li>
+                                    <li class="list-group-item d-flex ">
+                                        <div class="me-auto">Your role:</div>
+                                        <span class="badge bg-primary rounded-pill">{{player.role}}</span></li>
+                                    {{if player.role == 'Leader'}}
+                                    {% include 'leader/includes/leader_form.html' %}
+                                    {{endif}}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <style>
+                    .otree-chat {
+                        height: 100%
+                    }
+
+                    .otree-chat__messages {
+                        height: calc(100% - 50px);
+                        overflow: auto;
+                        background: #eee;
+                        margin: 2px 0 5px 0;
+                    }
+
+                </style>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{{ endblock }}
