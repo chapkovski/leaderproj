@@ -1,9 +1,85 @@
-<li class="list-group-item d-flex mb-3 row">
+<div id="mainsolid">
 
-    <label for="inputPrediction" class="col-sm-6 col-form-label">Your prediction</label>
-    <div class="col-sm-6 d-flex">
-      <input type="number" class="form-control" id="inputPrediction" name="prediction">
-      <button class="btn btn-primary mx-3">Submit</button>
-    </div>
+</div>
+<script type="module">
+    import {createSignal, createEffect} from "https://cdn.skypack.dev/solid-js@1.2.6";
+    import {render} from "https://cdn.skypack.dev/solid-js@1.2.6/web";
+    import html from "https://cdn.skypack.dev/solid-js@1.2.6/html";
 
-</li>
+    const App = ()=> {
+        const [modal,setModal]=createSignal(null);
+        const [newPrediction, setPrediction] = createSignal(null);
+        const handleSubmit=(e)=>{
+          e.preventDefault();
+          modal().show();
+          // document.getElementById('form').submit();
+        }
+        const handleFinal=(e)=>{
+          e.preventDefault();
+          
+          document.getElementById('form').submit();
+          console.debug('DO WE REACH')
+        }
+        createEffect(() => {
+
+            setModal( new bootstrap.Modal('#confirmModal', {}))
+
+
+        });
+        const onChange= (v)=>{
+            setPrediction(v)
+
+            setDisabled(['', null, undefined].includes(v))
+
+        }
+        const [isDisabled, setDisabled] = createSignal(true)
+        return html`
+            <form class="otree-form" method="post" role="form" id="form" autocomplete="off"
+            onSubmit="${handleSubmit}"
+            >
+
+            <div class="modal" tabindex="-1" id="confirmModal" >
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Attention!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>
+                      Are you sure you would like to submit this prediction: <b>${newPrediction}</b>?
+                      </p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No (cancel)</button>
+                    <button type="button" class="btn btn-primary" onClick="${handleFinal}">Yes (Submit the answer)</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+                <li class="list-group-item d-flex mb-3 row">
+
+                    <label for="inputPrediction" class="col-sm-6 col-form-label">Your prediction</label>
+                    <div class="col-sm-6 d-flex">
+                        <input type="number"
+                               class="form-control"
+                               id="inputPrediction"
+                               name="prediction"
+                               required
+                               value=${newPrediction()}
+                               onInput=${(e) => onChange(e.currentTarget.value)}
+                        >
+                        <button class="btn btn-primary mx-3" type="submit"
+                        disabled=${isDisabled}
+                        >Submit</button>
+                    </div>
+
+                </li>
+            </form>
+        `;
+    }
+   
+      
+           
+    render(App, document.getElementById('mainsolid'));
+</script>
