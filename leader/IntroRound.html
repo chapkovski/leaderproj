@@ -1,0 +1,12 @@
+{{ block title }}
+    Round {{view.round_number}} out of {{C.NUM_ROUNDS}} rounds
+{{ endblock }}
+
+{{ block content }}
+    <div>
+        Please click 'Next' to proceed to the <b>Round {{view.round_number}}</b>
+    </div>
+    {{ next_button }}
+{{ endblock }}
+
+

@@ -1,8 +1,24 @@
 {{ block title }}
-    Page title
+    Results for round {{view.round_number}}.
 {{ endblock }}
 
 {{ block content }}
+<table class="table table-hover table-stripped">
+    <tr>
+        <td>Round:</td>
+        <td>{{view.round_number}}</td>
+    </tr>
+    <tr>
+        <td>
+            Your group predicted:
+        </td>
+        <td>{{group.prediction}}</td>
+    </tr>
+    <tr>
+        <td>True value is:</td>
+        <td>{{subsession.true_value}}</td>
+    </tr>
+</table>
 
     {{ next_button }}
 {{ endblock }}

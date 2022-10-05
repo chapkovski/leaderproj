@@ -122,9 +122,12 @@ block body_main }} {% include 'otree/includes/TimeLimit.js.html' %}
                   pointFormat: " {point.y}",
                 },
                 plotOptions: {
-                  spline: {
+                  series: {
                     marker: {
-                      enable: false,
+                      
+                      symbol: 'circle',
+                      enable: true,
+                      radius:5
                     },
                   },
                 },
@@ -133,11 +136,11 @@ block body_main }} {% include 'otree/includes/TimeLimit.js.html' %}
                         {{if view.round_number > 1 }} 
                     {name:'Your forecast',
                         data:{{group.prognosis_data|json}},
-                        dashStyle: 'longdash'
+                        dashStyle: 'ShortDot'
                     },
                     {name:'True values',
                         data:{{group.true_values|json}},
-                        dashStyle: 'shortdot'
+                        dashStyle: 'Solid'
                     },
                     {{endif}}
                   {
