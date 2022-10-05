@@ -130,31 +130,22 @@ block body_main }} {% include 'otree/includes/TimeLimit.js.html' %}
                   },
                 },
                 
-                series: [
+                series: [ 
+                        {{if view.round_number > 1 }} 
                     {name:'Your prognosis',
-                        data:[null, null, 100,200,300],
+                        data:{{group.prognosis_data|json}},
+                        dashStyle: 'longdash'
+                    },
+                    {name:'True values',
+                        data:{{group.true_values|json}},
                         dashStyle: 'shortdot'
                     },
+                    {{endif}}
                   {
-                    zoneAxis: "x",
-                    name:'True values',
-                    data: [
-                      517, 494, 459, 438, 492, 503, 471, 479, 485, 459, 490,
-                      386, 462, 471, 485, 448, 405, 438, 425, 408, 505, 519,
-                      563, 570, 532, 670, 615, 563, 568, 626, 655, 750, 662,
-                      579, 614, 502, 499, 535, 485, 493, 519, 502, 492, 527,
-                      524, 490,
-                    ],
-                    zones: [
-                      {
-                        value: 30,
-                        color: "blue",
-                      },
-                      {
-                        value: 45,
-                        color: "red",
-                      },
-                    ],
+                    
+                    name:'Previous values',
+                    data: {{C.GRAPHS_DATA|json}},
+                    
                   },
                 ],
               },
