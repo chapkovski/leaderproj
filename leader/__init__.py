@@ -1,6 +1,6 @@
 from otree.api import *
 import csv
-
+from typing import List
 from otree.database import dbq
 with open('leader/data/graph.csv') as csvfile:
     graph_data = [int(i[0]) for i in csv.reader(csvfile)]
@@ -26,6 +26,7 @@ class C(BaseConstants):
     GRAPHS_DATA = graph_data[:MAX_OLD_VALUES]
     LAST_ITEM = GRAPHS_DATA[-1]
     NUM_ROUNDS = 6
+    WRONG_ANSWER = 'Please re-read the instructions and check the answer'
 
 
 class Subsession(BaseSubsession):
@@ -55,11 +56,60 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
-    pass
+    q1 = models.StringField(label='Who should submit each group’s forecast?',
+                            choices=["Any participant",
+                                     "All team members",
+                                     "The leader",
+                                     ],
+                            widget=widgets.RadioSelect)
+    q2 = models.StringField(label='How many forecasts should the group produce?',
+                            choices=["3",
+                                     "4",
+                                     "6",
+                                     ],
+                            widget=widgets.RadioSelect)
+    q3 = models.StringField(label='A MAPE score of > 50% is considered:',
+                            choices=["Accurate",
+                                     "Inaccurate",
+                                     "Acceptable", ],
+                            widget=widgets.RadioSelect)
+
+
+def q1_error_message(player, value):
+    if value != "The leader":
+        return C.WRONG_ANSWER
+
+
+def q2_error_message(player, value):
+    if value != "6":
+        return C.WRONG_ANSWER
+
+
+def q3_error_message(player, value):
+    if value != "Inaccurate":
+        return C.WRONG_ANSWER
 
 
 # PAGES
+def firstround(player: Player):
+    return player.round_number == 1
+
+
+class Instructions(Page):
+    is_displayed = firstround
+
+
+class Q(Page):
+    is_displayed = firstround
+    form_model: str = 'player'
+    form_fields: List[str] = ['q1', 'q2', 'q3']
+
+
 class IntroRound(Page):
+    pass
+
+
+class BeforeDecisionWP(WaitPage):
     pass
 
 
@@ -82,8 +132,10 @@ class Results(Page):
 
 
 page_sequence = [
+    Instructions,
+    Q,
     IntroRound,
-    WaitPage,
+    BeforeDecisionWP,
     DecisionPage,
     ResultsWaitPage,
     Results
