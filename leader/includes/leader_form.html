@@ -2,38 +2,40 @@
 
 </div>
 <script type="module">
-    import {createSignal, createEffect} from "https://cdn.skypack.dev/solid-js@1.2.6";
-    import {render} from "https://cdn.skypack.dev/solid-js@1.2.6/web";
-    import html from "https://cdn.skypack.dev/solid-js@1.2.6/html";
+  import { createSignal, createEffect } from "https://cdn.skypack.dev/solid-js@1.2.6";
+  import { render } from "https://cdn.skypack.dev/solid-js@1.2.6/web";
+  import html from "https://cdn.skypack.dev/solid-js@1.2.6/html";
+  function sendValue() {
+    liveSend('piada ivanna');
+  }
+  const App = () => {
+    const [modal, setModal] = createSignal(null);
+    const [newPrediction, setPrediction] = createSignal(null);
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      modal().show();
+      // document.getElementById('form').submit();
+    }
+    const handleFinal = (e) => {
+      e.preventDefault();
+      sendValue()
+      document.getElementById('form').submit();
+      console.debug('DO WE REACH')
+    }
+    createEffect(() => {
 
-    const App = ()=> {
-        const [modal,setModal]=createSignal(null);
-        const [newPrediction, setPrediction] = createSignal(null);
-        const handleSubmit=(e)=>{
-          e.preventDefault();
-          modal().show();
-          // document.getElementById('form').submit();
-        }
-        const handleFinal=(e)=>{
-          e.preventDefault();
-          
-          document.getElementById('form').submit();
-          console.debug('DO WE REACH')
-        }
-        createEffect(() => {
-
-            setModal( new bootstrap.Modal('#confirmModal', {}))
+      setModal(new bootstrap.Modal('#confirmModal', {}))
 
 
-        });
-        const onChange= (v)=>{
-            setPrediction(v)
+    });
+    const onChange = (v) => {
+      setPrediction(v)
 
-            setDisabled(['', null, undefined].includes(v))
+      setDisabled(['', null, undefined].includes(v))
 
-        }
-        const [isDisabled, setDisabled] = createSignal(true)
-        return html`
+    }
+    const [isDisabled, setDisabled] = createSignal(true)
+    return html`
             <form class="otree-form" method="post" role="form" id="form" autocomplete="off"
             onSubmit="${handleSubmit}"
             >
@@ -77,9 +79,9 @@
                 </li>
             </form>
         `;
-    }
-   
-      
-           
-    render(App, document.getElementById('mainsolid'));
+  }
+
+
+
+  render(App, document.getElementById('mainsolid'));
 </script>

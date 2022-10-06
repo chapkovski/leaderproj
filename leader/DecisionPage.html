@@ -6,6 +6,13 @@ block body_main }} {% include 'otree/includes/TimeLimit.js.html' %}
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
+<script>
+  function liveRecv(data) {
+    console.debug(' received a message!', data);
+    // your code goes here
+    $('#liveform').submit()
+}
+</script>
 <div class="container-fluid">
   <div class="row">
     <div class="col-3 overflow-auto vh-100">

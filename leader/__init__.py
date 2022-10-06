@@ -113,9 +113,18 @@ class BeforeDecisionWP(WaitPage):
     pass
 
 
+def live_method(player, data):
+    print('DATA RECIEVED', data)
+    return {0: 'Done'}
+
+
 class DecisionPage(Page):
     form_model = 'group'
     timeout_seconds = 1000
+    live_method=live_method
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.group.field_maybe_none('prediction') is None
 
     @staticmethod
     def get_form_fields(player: Player):
@@ -132,10 +141,10 @@ class Results(Page):
 
 
 page_sequence = [
-    Instructions,
-    Q,
-    IntroRound,
-    BeforeDecisionWP,
+    # Instructions,
+    # Q,
+    # IntroRound,
+    # BeforeDecisionWP,
     DecisionPage,
     ResultsWaitPage,
     Results
