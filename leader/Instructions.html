@@ -1,0 +1,19 @@
+{{ block title }}
+    
+{{ endblock }}
+
+{{ block content }}
+<div class="card my-3">
+    <div class="card-header">Instructions</div>
+    <div class="card-body">
+      <div class="card-text">
+        {{include 'leader/includes/full_instructions.html'}}
+      </div>
+    </div>
+  </div>
+</div>
+
+    {{ next_button }}
+{{ endblock }}
+
+
