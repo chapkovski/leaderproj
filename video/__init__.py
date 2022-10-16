@@ -5,12 +5,15 @@ from otree.forms.widgets import BaseWidget
 from otree.templating import render
 from wtforms.widgets import CheckboxInput
 from otree.api import *
+from otree.api import WaitPage as OWaitPage
 from otree.database import dbq
 from starlette.templating import Jinja2Templates
 import jinja2
 import json
 from starlette.datastructures import FormData as StarletteFormData
 from markupsafe import escape, Markup
+
+from leader import live_method
 templates = Jinja2Templates(directory='video/templates')
 doc = """
 Intro (video) to leader proj.
@@ -19,6 +22,26 @@ Intro (video) to leader proj.
 templateLoader = jinja2.FileSystemLoader(searchpath="video/templates")
 templateEnv = jinja2.Environment(loader=templateLoader)
 # ENDDEBUG
+
+from otree.models import Participant
+def wpmethod(player, data):
+    fk_field=Player.group_id
+    my_page_index = player.participant._index_in_pages
+    
+    ps =dbq(Player).join(Participant).filter(fk_field == player.group.id,
+    ).with_entities(Participant)
+    num_left=ps.filter(Participant._index_in_pages<my_page_index).count()
+    num_here=ps.filter(Participant._index_in_pages==my_page_index).count()
+    
+    return {0:dict(num_left=num_left, num_here=num_here)}
+
+class WaitPage(OWaitPage):
+    template_name = 'video/templates/WaitPage.html'
+    live_method = wpmethod
+
+    def get(self):
+
+        return super().get()
 
 
 class MyValidator:
@@ -75,12 +98,12 @@ class Group(BaseGroup):
 
 
 def control_q1_error_message(player, value):
-    if value !='...to meet strict deadlines':
+    if value != '...to meet strict deadlines':
         return C.ERR_MSG
 
 
 def control_q2_error_message(player, value):
-    if value !='Inspires and motivates':
+    if value != 'Inspires and motivates':
         return C.ERR_MSG
 
 
@@ -237,7 +260,8 @@ class AfterQWP(WaitPage):
 
 page_sequence = [
     FirstWP,
-    # Video,
+    Video,
     Q,
     AfterQWP,
 ]
+ 
