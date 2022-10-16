@@ -1,0 +1,6 @@
+<ul id="{{render_kw_name}}_wrapper">
+    {% for item in choices %}
+    <input type="checkbox" id="{{render_kw.id}}_{{loop.index}}" name="{{render_kw.name}}" value="{{item}}" >
+    <label for="{{render_kw.id}}_{{loop.index}}"> {{item}}</label><br>
+    {% endfor %}
+</ul>

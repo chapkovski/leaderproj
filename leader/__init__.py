@@ -120,7 +120,7 @@ def live_method(player, data):
 
 class DecisionPage(Page):
     form_model = 'group'
-    timeout_seconds = 1000
+    timeout_seconds = 3*60
     live_method=live_method
     @staticmethod
     def is_displayed(player: Player):

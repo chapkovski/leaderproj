@@ -1,0 +1,33 @@
+
+
+
+{% block body_main %}
+    <div class="otree-body container">
+        <h2 class="otree-title page-header" id="_otree-title">{% block title %}{% endblock %}</h2>
+        
+        <form class="otree-form" method="post" role="form" id="form" autocomplete="off">
+            
+            <div class="_otree-content">
+<!-- (((((((((((((((((((((((((((((((((((((((((((((((((((((((( CONTENT BLOCK -->
+              {% block content %}{% endblock %}
+<!-- )))))))))))))))))))))))))))))))))))))))))))))))))))))))) END OF CONTENT BLOCK -->
+            </div>
+        </form>
+        <br/>
+        {# need the check for projects with old MTurkLandingPage #}
+        
+    </div>
+{% endblock %}
+{% block internal_scripts %}
+
+
+    
+
+{% endblock %}
+
+{% block live %}
+  {% if has_live_method %}
+    <form id="liveform"></form>
+    
+  {% endif %}
+{% endblock %}

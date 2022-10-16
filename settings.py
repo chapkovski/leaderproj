@@ -9,6 +9,24 @@ SESSION_CONFIGS = [
             ],
         num_demo_participants=3,
     ),
+    dict(
+        name='leader_baseline',
+        app_sequence=[
+            'video',
+            'leader'
+            ],
+        treatment='control',
+        num_demo_participants=3,
+    ),
+    dict(
+        name='leader_treatment',
+        app_sequence=[
+            'video',
+            'leader'
+            ],
+        treatment='manipulation',
+        num_demo_participants=3,
+    ),
 ]
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
