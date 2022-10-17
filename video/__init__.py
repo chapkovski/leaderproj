@@ -30,9 +30,9 @@ def wpmethod(player, data):
     
     ps =dbq(Player).join(Participant).filter(fk_field == player.group.id,
     ).with_entities(Participant)
-    num_left=ps.filter(Participant._index_in_pages<my_page_index).count()
-    num_here=ps.filter(Participant._index_in_pages==my_page_index).count()
     
+    num_here=ps.filter(Participant._index_in_pages==my_page_index).count()
+    num_left=C.PLAYERS_PER_GROUP - num_here
     return {0:dict(num_left=num_left, num_here=num_here)}
 
 class WaitPage(OWaitPage):
@@ -210,7 +210,7 @@ class FirstWP(WaitPage):
 
 
 def treatment_sorter(player):
-    return True
+    
     if player.treatment == C.CONTROL:
         return player.round_number == 1
     else:
@@ -241,6 +241,8 @@ class Q(Page):
 
     @ staticmethod
     def is_displayed(player: Player):
+        if player.treatment == C.CONTROL:
+            return player.round_number==1
         return player.round_number < C.NUM_ROUNDS
 
     @ staticmethod

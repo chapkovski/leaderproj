@@ -1,4 +1,5 @@
 from otree.api import *
+from video import WaitPage as MyWaitPage
 import csv
 from typing import List
 from otree.database import dbq
@@ -109,7 +110,7 @@ class IntroRound(Page):
     pass
 
 
-class BeforeDecisionWP(WaitPage):
+class BeforeDecisionWP(MyWaitPage):
     pass
 
 
@@ -132,7 +133,7 @@ class DecisionPage(Page):
             return ['prediction']
 
 
-class ResultsWaitPage(WaitPage):
+class ResultsWaitPage(MyWaitPage):
     pass
 
 
