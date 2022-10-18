@@ -1,14 +1,20 @@
 from otree.api import *
-
+from video import WaitPage as MWP
 import csv
+from otree.models import Participant
 from typing import List
 from otree.database import dbq
+from video.methods import wpmethod
 with open('leader/data/graph.csv') as csvfile:
     graph_data = [int(i[0]) for i in csv.reader(csvfile)]
 
 doc = """
 Leader proj. by Philipp Chapkovski (UBonn)
 """
+
+
+def vars_for_wp(player):
+    return wpmethod(player, Player, Participant, dbq, C)
 
 
 def creating_session(subsession):
@@ -110,8 +116,9 @@ class IntroRound(Page):
     pass
 
 
-class BeforeDecisionWP(WaitPage):
-    pass
+class BeforeDecisionWP(MWP):
+    template_name = 'video/templates/WaitPage.html'
+    vars_for_template = vars_for_wp
 
 
 def live_method(player, data):
@@ -120,20 +127,23 @@ def live_method(player, data):
 
 
 class DecisionPage(Page):
-    form_model = 'group'
     timeout_seconds = 3*60
-    live_method=live_method
+    live_method = live_method
+
     @staticmethod
     def is_displayed(player: Player):
         return player.group.field_maybe_none('prediction') is None
 
-    @staticmethod
-    def get_form_fields(player: Player):
-        if player.role == C.LEADER_ROLE:
-            return ['prediction']
-
-
-class ResultsWaitPage(WaitPage):
+    def post(self):
+        if self._form_data.get('prediction'):
+            try:
+                self.group.prediction = int(self._form_data.get('prediction'))
+            except Exception as E:
+                print(E)
+                return super().post()
+        return super().post()
+ 
+class ResultsWaitPage(MWP):
     pass
 
 
@@ -142,10 +152,10 @@ class Results(Page):
 
 
 page_sequence = [
-    # Instructions,
-    # Q,
-    # IntroRound,
-    # BeforeDecisionWP,
+    Instructions,
+    Q,
+    IntroRound,
+    BeforeDecisionWP,
     DecisionPage,
     ResultsWaitPage,
     Results

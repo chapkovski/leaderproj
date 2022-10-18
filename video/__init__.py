@@ -1,4 +1,6 @@
 
+from otree.models import Participant
+from .methods import wpmethod
 from typing import Any
 from jinja2 import Environment, FileSystemLoader
 from otree.forms.widgets import BaseWidget
@@ -23,25 +25,15 @@ templateLoader = jinja2.FileSystemLoader(searchpath="video/templates")
 templateEnv = jinja2.Environment(loader=templateLoader)
 # ENDDEBUG
 
-from otree.models import Participant
-def wpmethod(player, data):
-    fk_field=Player.group_id
-    my_page_index = player.participant._index_in_pages
-    
-    ps =dbq(Player).join(Participant).filter(fk_field == player.group.id,
-    ).with_entities(Participant)
-    
-    num_here=ps.filter(Participant._index_in_pages==my_page_index).count()
-    num_left=C.PLAYERS_PER_GROUP - num_here
-    return {0:dict(num_left=num_left, num_here=num_here)}
+def vars_for_wp(player):
+    return wpmethod(player, Player, Participant, dbq, C)
 
-class MYWaitPage(OWaitPage):
+
+class WaitPage(OWaitPage):
     template_name = 'video/templates/WaitPage.html'
-    live_method = wpmethod
+    # live_method = wpmethod
 
-    def get(self):
-
-        return super().get()
+    vars_for_template = vars_for_wp
 
 
 class MyValidator:
@@ -210,7 +202,7 @@ class FirstWP(WaitPage):
 
 
 def treatment_sorter(player):
-    
+
     if player.treatment == C.CONTROL:
         return player.round_number == 1
     else:
@@ -242,7 +234,7 @@ class Q(Page):
     @ staticmethod
     def is_displayed(player: Player):
         if player.treatment == C.CONTROL:
-            return player.round_number==1
+            return player.round_number == 1
         return player.round_number < C.NUM_ROUNDS
 
     @ staticmethod
@@ -266,4 +258,3 @@ page_sequence = [
     # Q,
     # AfterQWP,
 ]
- 

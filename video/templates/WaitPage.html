@@ -1,52 +1,53 @@
 {{ extends 'otree/WaitPage.html' }}
 {{ block title }}{{ title_text }}{{ endblock }}
 {{ block content }}
- <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-  />
-    {{ body_text }}
-    <div class="alert alert-info lead">Currently 
-    <span id="num-here" class="animate__animated animate__bounce"></span> participant<span id="num-here-ending"></span> here.</div>
-    <div class="alert alert-warning lead fw-bold text-center">You need to wait for
-     <span id="num-left"></span> more participant<span id="num-left-ending"></span></div>
-    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+{{ body_text }}
+<div class="alert alert-info lead">Currently
+    <span id="num-here" class="animate__animated animate__bounce">{{num_here}}</span> participant<span
+        id="num-here-ending"></span> here.
+</div>
+<div class="alert alert-warning lead fw-bold text-center">You need to wait for
+    <span id="num-left">{{num_left}}</span> more participant<span id="num-left-ending"></span>
+</div>
 
+<script>
+    const $numLeft = $('#num-left')
+    const $numLeftEnding = $('#num-left-ending')
+    const $numHere = $('#num-here')
+    const $numHereEnding = $('#num-here-ending')
+    const numLeft = {{ num_left| json}}
+    const numHere = {{ num_here| json}}
+    $numLeftEnding.html(numLeft > 1 ? 's' : '')
 
+    $numHereEnding.html(numHere > 1 ? 's' : '')
+    const SECOND = 1000;
+    window.setInterval(function () {
+        console.debug('reload to get new user params')
+        window.location.href = window.location.pathname;
+    }, (5 + Math.random() * 10) * SECOND);
+
+</script>
+{#
 {% block internal_scripts %}
-  <script src="{% static 'otree/js/internet-explorer.js' %}"></script>
-  <script src="{% static 'otree/js/reconnecting-websocket-iife.min.js' %}"></script>
-    {% block bootstrap_scripts %}
-    <script src="{% static 'bootstrap5/js/bootstrap.bundle.min.js' %}"></script>
-    {% endblock %}
-    <script src="{% static 'otree/js/common.js' %}"></script>
-    <form id="liveform"></form>
-    <script src="{% static 'otree/js/live.js' %}" id="otree-live" data-socket-url="{{ view.live_url() }}"></script>
+<script src="{% static 'otree/js/internet-explorer.js' %}"></script>
+<script src="{% static 'otree/js/reconnecting-websocket-iife.min.js' %}"></script>
+{% block bootstrap_scripts %}
+<script src="{% static 'bootstrap5/js/bootstrap.bundle.min.js' %}"></script>
 {% endblock %}
-  
-  
- 
-    <script>
-    const $numLeft =$('#num-left')
-    const $numLeftEnding =$('#num-left-ending')
-    const $numHere=$('#num-here')
-    const $numHereEnding=$('#num-here-ending')
-    
-       $(()=>{
-        liveSend('testWP')
-        setInterval(function () {
-            liveSend('testWP')
-            }, 5000);
-        
-        })
-        function liveRecv(data) {
-            
-            $numLeft.html(data.num_left)
-            $numLeftEnding.html(data.num_left>1?'s':'')
-            $numLeft.addClass('animate__animated animate__bounce')
-            $numHereEnding.html(data.num_here>1?'s':'')
-            $numHere.html(data.num_here)
-  }
+<script src="{% static 'otree/js/common.js' %}"></script>
+<form id="liveform"></form>
+<script src="{% static 'otree/js/live.js' %}" id="otree-live" data-socket-url="{{ view.live_url() }}"></script>
+{% endblock %}
+#}
 
-       </script>
+{#
+<script>
+    const $numLeft = $('#num-left')
+    const $numLeftEnding = $('#num-left-ending')
+    const $numHere = $('#num-here')
+    const $numHereEnding = $('#num-here-ending')
+
+
+</script> #}
 {{ endblock }}
