@@ -1,5 +1,5 @@
 from otree.api import *
-from video import WaitPage as MyWaitPage
+
 import csv
 from typing import List
 from otree.database import dbq
@@ -12,7 +12,7 @@ Leader proj. by Philipp Chapkovski (UBonn)
 
 
 def creating_session(subsession):
-    subsession.true_value = C.TO_PREDICT[subsession.round_number]
+    subsession.true_value = C.TO_PREDICT[subsession.round_number-1]
 
 
 class C(BaseConstants):
@@ -110,7 +110,7 @@ class IntroRound(Page):
     pass
 
 
-class BeforeDecisionWP(MyWaitPage):
+class BeforeDecisionWP(WaitPage):
     pass
 
 
@@ -133,7 +133,7 @@ class DecisionPage(Page):
             return ['prediction']
 
 
-class ResultsWaitPage(MyWaitPage):
+class ResultsWaitPage(WaitPage):
     pass
 
 
@@ -142,10 +142,10 @@ class Results(Page):
 
 
 page_sequence = [
-    Instructions,
-    Q,
-    IntroRound,
-    BeforeDecisionWP,
+    # Instructions,
+    # Q,
+    # IntroRound,
+    # BeforeDecisionWP,
     DecisionPage,
     ResultsWaitPage,
     Results

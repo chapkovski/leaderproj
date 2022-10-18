@@ -35,7 +35,7 @@ def wpmethod(player, data):
     num_left=C.PLAYERS_PER_GROUP - num_here
     return {0:dict(num_left=num_left, num_here=num_here)}
 
-class WaitPage(OWaitPage):
+class MYWaitPage(OWaitPage):
     template_name = 'video/templates/WaitPage.html'
     live_method = wpmethod
 
@@ -262,8 +262,8 @@ class AfterQWP(WaitPage):
 
 page_sequence = [
     FirstWP,
-    Video,
-    Q,
-    AfterQWP,
+    # Video,
+    # Q,
+    # AfterQWP,
 ]
  
