@@ -142,10 +142,10 @@ class Results(Page):
 
 
 page_sequence = [
-    # Instructions,
-    # Q,
-    # IntroRound,
-    # BeforeDecisionWP,
+    Instructions,
+    Q,
+    IntroRound,
+    BeforeDecisionWP,
     DecisionPage,
     ResultsWaitPage,
     Results
