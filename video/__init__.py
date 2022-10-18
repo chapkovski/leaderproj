@@ -254,7 +254,7 @@ class AfterQWP(WaitPage):
 
 page_sequence = [
     FirstWP,
-    # Video,
-    # Q,
-    # AfterQWP,
+    Video,
+    Q,
+    AfterQWP,
 ]
