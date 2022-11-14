@@ -25,6 +25,7 @@ templateLoader = jinja2.FileSystemLoader(searchpath="video/templates")
 templateEnv = jinja2.Environment(loader=templateLoader)
 # ENDDEBUG
 
+
 def vars_for_wp(player):
     return wpmethod(player, Player, Participant, dbq, C)
 
@@ -100,9 +101,9 @@ def control_q2_error_message(player, value):
 
 
 def treatment_q1_error_message(player, value):
-    pvalue = set(json.loads(value))
-    check = set(['Facilitator'])
-    if pvalue != check:
+    # pvalue = set(json.loads(value))
+    check = 'Facilitator'
+    if value != check:
         return C.ERR_MSG
 
 
@@ -129,18 +130,19 @@ class Player(BasePlayer):
     treatment = models.StringField()
     video = models.StringField()
     treatment_q1 = models.StringField(label='What role could a team leader play to improve team task results? ',
-                                      widget=MyWidget(choices=["Supervisor",
-                                                               "Bold leader",
-                                                               "Visionary leader",
-                                                               "Facilitator"])
+                                      choices=["Supervisor",
+                                               "Bold leader",
+                                               "Visionary leader",
+                                               "Facilitator"],
+                                      widget=widgets.RadioSelect
                                       )
-    treatment_q2 = models.StringField(label='What constitutes effective facilitation strategies?',
+    treatment_q2 = models.StringField(label='What constitutes effective facilitation strategies? <br><b>(select TWO choices)</b>',
                                       widget=MyWidget(choices=["Ensure participation",
                                                                "Assigning tasks effectively.",
                                                                "Connect current task to previous performance.",
                                                                "Being assertive and clear in providing direction.",
                                                                ]))
-    treatment_q3 = models.StringField(label="How aircraft carriers' crews conduct discussions? ",
+    treatment_q3 = models.StringField(label="How aircraft carriers' crews conduct discussions? <br><b>(select TWO choices)</b>",
                                       widget=MyWidget(choices=["They focus on their successes and reassure each other.",
                                                                "They focus on error and what could go wrong.",
                                                                "They are confident in their leader’s decisions and follow suit.",
@@ -217,14 +219,13 @@ class Q(Page):
     form_model = 'player'
     checkboxes = [
 
-        'treatment_q1',
+      
         'treatment_q2',
         'treatment_q3',
     ]
 
     def post(self):
         data = dict(self._form_data)
-
         for i in self.checkboxes:
             if self._form_data.getlist(i):
                 data[i] = json.dumps(self._form_data.getlist(i))

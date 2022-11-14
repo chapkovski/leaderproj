@@ -127,7 +127,13 @@ def live_method(player, data):
 
 
 class DecisionPage(Page):
-    timeout_seconds = 3*60
+    @staticmethod
+    def get_timeout_seconds(player: Player):
+        MINUTE = 60
+        if player.round_number == 1:
+            return player.session.config.get('round_one_minutes')*MINUTE
+        return player.session.config.get('other_round_minutes')*MINUTE
+
     live_method = live_method
 
     @staticmethod
@@ -142,7 +148,8 @@ class DecisionPage(Page):
                 print(E)
                 return super().post()
         return super().post()
- 
+
+
 class ResultsWaitPage(MWP):
     pass
 
