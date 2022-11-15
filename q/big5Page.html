@@ -1,0 +1,223 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+    Questionnaire
+{% endblock %}
+
+{% block content %}
+
+    <style>
+        label.btn.btn-default.btn-secondary.active {
+            background: yellow;
+            color: black;
+        }
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/survey-jquery/1.9.57/survey.jquery.min.js" integrity="sha512-zBj+gFIwe5cDZ9Ys7RFYlND6QXNyQSSjUvsWe1Od7Wrm7nkTGmQ8AiXhcibOOnaaUzT1p4dADXmtHjwVX4hXQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/survey-jquery/1.9.57/survey.css" integrity="sha512-jP7dHX09msYLCZEmv3FYTO+x6qxrwZRwWhlYKfQbtsfZCiECZorl9EfabJKL3ojJ9S+OvVgXVCNLCdOPPMSvow==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js" integrity="sha512-LhccdVNGe2QMEfI3x4DVV3ckMRe36TfydKss6mJpdHjNFiV07dFpS2xzeZedptKZrwxfICJpez09iNioiSZ3hA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+   
+        
+        <div id="surveyElement" style="display:inline-block;width:100%;"></div>
+    
+    <input type="hidden" id="surveyholder" name="surveyholder">
+    <script>
+
+
+    Survey.defaultBootstrapCss.navigationButton = "btn-primary btn-lg";
+    Survey
+        .StylesManager
+        .applyTheme("bootstrap");
+
+
+  var surveyJSON = {
+  logoPosition: "right",
+    requiredText: "",
+showCompletedPage: false,
+  showPrevButton:false,
+  completeText:'Next',
+   "pages": [
+  {
+   "name": "page1",
+   "elements": [
+    {
+     "type": "matrix",
+     "name": "big5",
+     "title": "I see myself as someone who...",
+     "columns": [
+      {
+       "value": "1",
+       "text": "(1) disagree strongly"
+      },
+      {
+       "value": "2",
+       "text": "(2) disagree a little"
+      },
+      {
+       "value": "3",
+       "text": "(3) neither agree nor disagree"
+      },
+      {
+       "value": "4",
+       "text": "(4) agree a little"
+      },
+      {
+       "value": "5",
+       "text": "(5) agree strongly"
+      }
+     ],
+     "rows": [
+      {
+       "value": "big_1",
+       "text": "…is reserved"
+      },
+      {
+       "value": "big_2",
+       "text": "…is generally trusting"
+      },
+      {
+       "value": "big_3",
+       "text": "…tends to be lazy"
+      },
+      {
+       "value": "big_4",
+       "text": "…is relaxed, handles stress well"
+      },
+      {
+       "value": "big_5",
+       "text": "…has few artistic interests"
+      },
+      {
+       "value": "big_6",
+       "text": "…is outgoing, sociable"
+      },
+      {
+       "value": "big_7",
+       "text": "…tends to find fault with others"
+      },
+      {
+       "value": "big_8",
+       "text": "…does a thorough job"
+      },
+      {
+       "value": "big_9",
+       "text": "…gets nervous easily"
+      },
+      {
+       "value": "big_10",
+       "text": "…has an active imagination"
+      }
+     ],
+     {# "isAllRowRequired": true #}
+    }
+   ]
+  },
+  {
+   "name": "page2",
+   "elements": [
+    {
+     "type": "matrix",
+     "name": "mindful",
+     "title": "Please rate from 1 to 7 how the below statements describe your experience in the team.",
+     "columns": [
+      {
+       "value": "1",
+       "text": "(1) not at all"
+      },
+      {
+       "value": "2",
+       "text": "(2) to a very limited extent"
+      },
+      {
+       "value": "3",
+       "text": "(3) to a limited extent"
+      },
+      {
+       "value": "4",
+       "text": "(4) to a moderate extent"
+      },
+      {
+       "value": "5",
+       "text": "(5) to a considerable extent"
+      },
+      {
+       "value": "6",
+       "text": "(6) to a great extent "
+      },
+      {
+       "value": "7",
+       "text": "(7) to a very great extent"
+      }
+     ],
+     "rows": [
+      {
+       "value": "mind_1",
+       "text": "When starting a new round, we discuss what to look for"
+      },
+      {
+       "value": "mind_2",
+       "text": "We spend time identifying activities we do not want to go wrong"
+      },
+      {
+       "value": "mind_3",
+       "text": "We discuss alternatives as to how to go about our tasks"
+      },
+      {
+       "value": "mind_4",
+       "text": "We have a good map of each other’s talents and skills"
+      },
+      {
+       "value": "mind_5",
+       "text": "We discuss our unique skills with each other, so we know who on the unit has relevant specialized skills and knowledge"
+      },
+      {
+       "value": "mind_6",
+       "text": "We talk about mistakes and ways to learn from them"
+      },
+      {
+       "value": "mind_7",
+       "text": "When errors happen, we discuss how we could have prevented them"
+      },
+      {
+       "value": "mind_8",
+       "text": "When attempting to resolve a problem, we take advantage of the unique skills of our colleagues"
+      },
+      {
+       "value": "mind_9",
+       "text": "When a crisis occurs, we rapidly pool our collective expertise to attempt to resolve it"
+      }
+     ],
+     {# "isAllRowRequired": true #}
+    }
+   ]
+  }
+ ]
+};
+
+    window.survey = new Survey.Model(surveyJSON);
+
+    survey
+        .onComplete
+        .add(function (sender) {
+            document
+            $('#surveyholder').val(JSON.stringify(sender.data, null, 3))
+            $('#form').submit()
+            ;
+        });
+    //Create showdown markdown converter
+    var converter = new showdown.Converter();
+
+    survey.locale = 'en';
+    $("#surveyElement").Survey({model: survey});
+    ;
+
+
+
+
+
+
+    </script>
+
+{% endblock %}

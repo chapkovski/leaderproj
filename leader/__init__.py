@@ -18,6 +18,8 @@ def vars_for_wp(player):
 
 
 def creating_session(subsession):
+    for p in subsession.get_players():
+        p.endowment = subsession.session.config.get('endowment', 1)
     subsession.true_value = C.TO_PREDICT[subsession.round_number-1]
 
 
@@ -41,8 +43,31 @@ class Subsession(BaseSubsession):
 
 
 class Group(BaseGroup):
+    def mape(self):
+        allrels = [i.rel_deviation for i in self.in_all_rounds()]
+        return sum(allrels)/len(allrels)
 
-    final_prediction = models.IntegerField(label='Look at the predictions made by you at the discussion stage and make the final prediction for this round:')
+    def mape_formatted(self):
+        return f'{self.mape():.0%}'
+
+    @property
+    def deviation(self):
+        return self.final_prediction-self.subsession.true_value
+
+    @property
+    def rel_deviation(self):
+        return self.abs_deviation/self.subsession.true_value
+
+    @property
+    def rel_deviation_formatted(self):
+        return f'{self.rel_deviation:.0%}'
+
+    @property
+    def abs_deviation(self):
+        return abs(self.deviation)
+
+    final_prediction = models.IntegerField(
+        label='Look at the predictions made by you at the discussion stage and make the final prediction for this round:')
 
     @property
     def prognosis_data(self):
@@ -63,6 +88,10 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
+    endowment = models.CurrencyField()
+    @property
+    def example_payoff(self):
+        return self.endowment*(1-0.083)
     prediction = models.IntegerField()
     q1 = models.StringField(label='Who decides the team final forecast in each round?   ',
                             choices=["Any participant",
@@ -137,7 +166,6 @@ class DecisionPage(Page):
 
     live_method = live_method
 
-
     def post(self):
         if self._form_data.get('prediction'):
             try:
@@ -152,7 +180,6 @@ class BeforeLeaderDecisionWP(MWP):
     body_text = 'Please wait while leader makes the final prediction!'
     template_name = 'video/templates/WaitPage.html'
     vars_for_template = vars_for_wp
-
 
 
 class LeaderDecisionPage(Page):
@@ -172,6 +199,26 @@ class Results(Page):
     pass
 
 
+class BeforeFinalResultsWP(WaitPage):
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.round_number == C.NUM_ROUNDS
+    after_all_players_arrive = 'set_payoffs'
+
+
+class FinalResults(Page):
+    pass
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.round_number == C.NUM_ROUNDS
+
+
+def set_payoffs(group):
+    mape = group.mape()
+    for p in group.get_players():
+        p.payoff = p.endowment*(1-mape)
+
+
 page_sequence = [
     Instructions,
     Q,
@@ -181,5 +228,7 @@ page_sequence = [
     BeforeLeaderDecisionWP,
     LeaderDecisionPage,
     ResultsWaitPage,
-    Results
+    Results,
+    BeforeFinalResultsWP,
+    FinalResults
 ]

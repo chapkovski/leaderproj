@@ -19,7 +19,7 @@
       <td>{{p.role}} 
       {{if p.role == C.LEADER_ROLE}}  (you) {{endif}}
       </td>
-      <td>{{p.prediction}}</td>
+      <td>{{p.field_maybe_none('prediction')}}</td>
       </tr>
       {% endfor %}
       </table>

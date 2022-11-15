@@ -1,0 +1,36 @@
+{{ block title }}
+    Final results
+{{ endblock }}
+
+{{ block content }}
+<table class="table table-hover table-stripped">
+   <thead>
+   <tr>
+   <th></th>
+   <th>Forecast</th>
+   <th>Actual</th>
+   <th>Deviation</th>
+   <th>Absolute Deviation</th>
+   <th>% of error</th>
+   </tr></thead>
+   <tbody>
+   {{for g in group.in_all_rounds}}
+   <tr>
+   <td>Round {{g.round_number}}</td>
+   <td>{{g.final_prediction}}</td>
+   <td>{{g.subsession.true_value}}</td>
+   <td>{{g.deviation}}</td>
+   <td>{{g.abs_deviation}}</td>
+   <td>{{g.rel_deviation_formatted}}</td>
+   </tr>
+   {{endfor}}
+   </tbody>
+</table>
+<hr>
+
+<h2>MAPE: {{group.mape_formatted}}</h2>
+<h2>Your payoff: {{player.payoff}}</h2>
+    {{ next_button }}
+{{ endblock }}
+
+
