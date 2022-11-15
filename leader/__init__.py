@@ -42,7 +42,7 @@ class Subsession(BaseSubsession):
 
 class Group(BaseGroup):
 
-    prediction = models.IntegerField()
+    final_prediction = models.IntegerField(label='Look at the predictions made by you at the discussion stage and make the final prediction for this round:')
 
     @property
     def prognosis_data(self):
@@ -50,7 +50,7 @@ class Group(BaseGroup):
         p = dbq(Group).filter(
             Group.session == self.session,
             Group.round_number < self.round_number
-        ).order_by('round_number').with_entities(Group.prediction)
+        ).order_by('round_number').with_entities(Group.final_prediction)
         ready_prognosis = [i for [i] in list(p)]
 
         empty = [None for i in range(len(C.GRAPHS_DATA))]
@@ -63,6 +63,7 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
+    prediction = models.IntegerField()
     q1 = models.StringField(label='Who should submit each group’s forecast?',
                             choices=["Any participant",
                                      "All team members",
@@ -136,18 +137,31 @@ class DecisionPage(Page):
 
     live_method = live_method
 
-    @staticmethod
-    def is_displayed(player: Player):
-        return player.group.field_maybe_none('prediction') is None
 
     def post(self):
         if self._form_data.get('prediction'):
             try:
-                self.group.prediction = int(self._form_data.get('prediction'))
+                self.player.prediction = int(self._form_data.get('prediction'))
             except Exception as E:
                 print(E)
                 return super().post()
         return super().post()
+
+
+class BeforeLeaderDecisionWP(MWP):
+    body_text = 'Please wait while leader makes the final prediction!'
+    template_name = 'video/templates/WaitPage.html'
+    vars_for_template = vars_for_wp
+
+
+
+class LeaderDecisionPage(Page):
+    form_fields = ['final_prediction']
+    form_model = 'group'
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.role == C.LEADER_ROLE
 
 
 class ResultsWaitPage(MWP):
@@ -164,6 +178,8 @@ page_sequence = [
     IntroRound,
     BeforeDecisionWP,
     DecisionPage,
+    BeforeLeaderDecisionWP,
+    LeaderDecisionPage,
     ResultsWaitPage,
     Results
 ]

@@ -195,8 +195,9 @@ block body_main }} {% include 'otree/includes/TimeLimit.js.html' %}
                       >{{player.role}}</span
                     >
                   </li>
-                  {{if player.role == 'Leader'}} {% include
-                  'leader/includes/leader_form.html' %} {{endif}}
+                  {# {{if player.role == 'Leader'}}  #}
+                  {% include 'leader/includes/leader_form.html' %} 
+                  {# {{endif}} #}
                 </ul>
               </div>
             </div>
