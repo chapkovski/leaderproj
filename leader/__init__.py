@@ -64,7 +64,7 @@ class Group(BaseGroup):
 
 class Player(BasePlayer):
     prediction = models.IntegerField()
-    q1 = models.StringField(label='Who should submit each group’s forecast?',
+    q1 = models.StringField(label='Who decides the team final forecast in each round?   ',
                             choices=["Any participant",
                                      "All team members",
                                      "The leader",
