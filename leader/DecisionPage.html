@@ -1,10 +1,6 @@
 {{ extends 'otree/Page.html' }} {{ block title }} Page title {{ endblock }} {{
 block body_main }} {% include 'otree/includes/TimeLimit.js.html' %}
 
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
 <script>
   function liveRecv(data) {
@@ -77,102 +73,7 @@ block body_main }} {% include 'otree/includes/TimeLimit.js.html' %}
     </div>
     <div class="col-9">
       <div class="w-100 vh-100 d-flex flex-column">
-        <div class="row h-50 d-inline-block w-100" id="chartwrapper">
-          <div id="container"></div>
-          <script>
-            var chart = new Highcharts.chart(
-              {
-                exporting: {
-                  enabled: false,
-                },
-                credits: {
-                  enabled: false,
-                },
-                chart: {
-                  renderTo: "container",
-                  type: "line",
-
-                  height: "400px",
-                },
-                title: {
-                  text: "Current graph here",
-                },
-                subtitle: {
-                  text: "Subtitle",
-                },
-                xAxis: {
-                  allowDecimals: false,
-                  reversed: false,
-                  title: {
-                    enabled: true,
-                    text: "Months",
-                  },
-
-                  maxPadding: 0.05,
-                  showLastLabel: true,
-                },
-                yAxis: {
-                  title: {
-                    text: "sales $M",
-                  },
-                  labels: {
-                    format: "{value}",
-                  },
-                  
-                  lineWidth: 2,
-                },
-                legend: {
-                  enabled: true,
-                },
-                tooltip: {
-                  headerFormat: "<b>{series.name}</b><br/>",
-                  pointFormat: " {point.y}",
-                },
-                plotOptions: {
-                  series: {
-                    marker: {
-                      
-                      symbol: 'circle',
-                      enable: true,
-                      radius:5
-                    },
-                  },
-                },
-                
-                series: [ 
-                        {{if view.round_number > 1 }} 
-                    {name:'Your forecast',
-                        data:{{group.prognosis_data|json}},
-                        dashStyle: 'ShortDot'
-                    },
-                    {name:'True values',
-                        data:{{group.true_values|json}},
-                        dashStyle: 'Solid'
-                    },
-                    {{endif}}
-                  {
-                    
-                    name:'Previous values',
-                    data: {{C.GRAPHS_DATA|json}},
-                    
-                  },
-                ],
-              },
-              function (chart) {
-                var setHeight = function () {
-                  let box = document.getElementById("chartwrapper");
-                  let width = box.offsetWidth;
-                  let height = box.offsetHeight;
-                  chart.setSize(width, height - 20);
-                };
-
-                $(window).resize(setHeight);
-
-                setHeight();
-              }
-            );
-          </script>
-        </div>
+         {{include 'leader/includes/chart.html'}}
         <div class="row d-flex flex-grow-1">
           <div class="col-6 flex-grow-1 my-3">
             {{chat nickname=player.role }}
