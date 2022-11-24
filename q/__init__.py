@@ -1,5 +1,6 @@
 from otree.api import *
 import json
+from starlette.responses import RedirectResponse
 
 doc = """
 Your app description
@@ -70,10 +71,13 @@ class MindfulPage(Page):
     pass
 
 
-class Results(Page):
-    pass
+class FinalForProlific(Page):
+    
+
+    def get(self):
+        return RedirectResponse(self.session.config.get('prolific_redirect_url'))
 
 
 page_sequence = [big5Page,
                 #  MindfulPage,
-                  Results]
+                  FinalForProlific]

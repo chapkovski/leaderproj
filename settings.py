@@ -50,7 +50,8 @@ SESSION_CONFIG_DEFAULTS = dict(
     real_world_currency_per_point=1.00, participation_fee=0.00, doc="",
     round_one_minutes=10,
     other_round_minutes=3,
-    endowment=12
+    endowment=6,
+    prolific_redirect_url='https://app.prolific.co/submissions/complete?cc=CI6LURUB'
 )
 
 PARTICIPANT_FIELDS = []
