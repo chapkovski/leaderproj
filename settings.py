@@ -72,3 +72,10 @@ ADMIN_PASSWORD = environ.get('OTREE_ADMIN_PASSWORD')
 DEMO_PAGE_INTRO_HTML = """ """
 
 SECRET_KEY = '2327454921041'
+ROOMS = [
+
+    dict(
+        name='prolific',
+        display_name='Prolific'
+    ),
+]
