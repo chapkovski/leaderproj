@@ -1,26 +1,61 @@
 <div id="mainsolid">
 
 </div>
+<script>
+  let socket, nickname;
+
+  const sendChat = (msg) => {
+    var data = {
+      'body': msg,
+      'nickname_signed': nickname
+    };
+
+    socket.send(JSON.stringify(data));
+  }
+  $(function () {
+
+    var varsFromDjango = {{ chat_vars_for_js.chat_vars_for_js| json
+  }};
+  var channel = varsFromDjango.channel;
+  var socketPath = varsFromDjango.socket_path;
+  console.debug(socketPath)
+  var participantID = varsFromDjango.participant_id;
+  var nickname_i_see_for_myself = varsFromDjango.nickname_i_see_for_myself;
+
+  var $chatWidget = $('#_js-otree-chat-' + channel);
+
+  var $messageInput = $chatWidget.find('input');
+  socket = makeReconnectingWebSocket(socketPath);
+  nickname = varsFromDjango.nickname_signed;
+    
+})
+</script>
+
 <script type="module">
   import { createSignal, createEffect } from "https://cdn.skypack.dev/solid-js@1.2.6";
   import { render } from "https://cdn.skypack.dev/solid-js@1.2.6/web";
   import html from "https://cdn.skypack.dev/solid-js@1.2.6/html";
-  function sendValue() {
-    liveSend('someone submitted the decision');
+  function sendValue(prediction) {
+    sendChat(`Prediction sent: ${prediction.prediction}`)
+    liveSend(prediction);
   }
   const App = () => {
     const [modal, setModal] = createSignal(null);
-    const [newPrediction, setPrediction] = createSignal(null);
+    const [newPrediction, setPrediction] = createSignal('');
     const handleSubmit = (e) => {
-      e.preventDefault();
+      
+      
       modal().show();
-      // document.getElementById('form').submit();
+      
     }
     const handleFinal = (e) => {
-      e.preventDefault();
-      sendValue()
-      document.getElementById('form').submit();
-      console.debug('DO WE REACH')
+      
+      sendValue({ prediction: newPrediction() })
+      $('#confirmModal').modal('hide')
+      setPrediction('0')
+      console.debug('red sent',e)
+      
+
     }
     createEffect(() => {
 
@@ -37,7 +72,7 @@
     const [isDisabled, setDisabled] = createSignal(true)
     return html`
             <form class="otree-form" method="post" role="form" id="form" autocomplete="off"
-            onSubmit="${handleSubmit}"
+            onSubmit=""
             >
 
             <div class="modal" tabindex="-1" id="confirmModal" >
@@ -71,8 +106,9 @@
                                value=${newPrediction()}
                                onInput=${(e) => onChange(e.currentTarget.value)}
                         >
-                        <button class="btn btn-primary mx-3" type="submit"
+                        <button class="btn btn-primary mx-3" type="button"
                         disabled=${isDisabled}
+                        onClick=${handleSubmit}
                         >Submit</button>
                     </div>
 

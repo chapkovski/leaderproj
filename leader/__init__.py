@@ -1,3 +1,4 @@
+from otree.chat import chat_template_tag
 from otree.api import *
 from video import WaitPage as MWP
 import csv
@@ -89,6 +90,7 @@ class Group(BaseGroup):
 
 class Player(BasePlayer):
     endowment = models.CurrencyField()
+
     @property
     def example_payoff(self):
         return self.endowment*(1-0.083)
@@ -152,8 +154,20 @@ class BeforeDecisionWP(MWP):
 
 
 def live_method(player, data):
-    print('DATA RECIEVED', data)
-    return {0: 'Done'}
+    print('Prediction submitted by {player.participant.code}; round {player.round_number}; group {player.group.id_in_subsession} ', data)
+    try:
+        player.prediction = int(data.get('prediction'))
+        predictions = [p.field_maybe_none(
+            'prediction') is not None for p in player.group.get_players()]
+        group_done = all(predictions)
+        return {0: dict(
+            msg=f'{player.role} submitted prediction {player.prediction}',
+            group_done=group_done
+        )}
+    except Exception as E:
+        print(E)
+        print(
+            f'Something went wrong with prediction registration for participant {player.participant.code}')
 
 
 class DecisionPage(Page):
@@ -165,6 +179,17 @@ class DecisionPage(Page):
         return player.session.config.get('other_round_minutes')*MINUTE
 
     live_method = live_method
+
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        context = dict(player=player,
+                       group=player.group,
+                       Constants=C,
+                       participant=player.participant,
+                       session=player.session)
+        chat_context = chat_template_tag(context)
+        return dict(chat_vars_for_js=chat_context)
 
     def post(self):
         if self._form_data.get('prediction'):
@@ -192,7 +217,8 @@ class LeaderDecisionPage(Page):
 
 
 class ResultsWaitPage(MWP):
-    pass
+    template_name = 'video/templates/WaitPage.html'
+    vars_for_template = vars_for_wp
 
 
 class Results(Page):
@@ -200,6 +226,8 @@ class Results(Page):
 
 
 class BeforeFinalResultsWP(WaitPage):
+    template_name = 'video/templates/WaitPage.html'
+    vars_for_template = vars_for_wp
     @staticmethod
     def is_displayed(player: Player):
         return player.round_number == C.NUM_ROUNDS
@@ -208,6 +236,7 @@ class BeforeFinalResultsWP(WaitPage):
 
 class FinalResults(Page):
     pass
+
     @staticmethod
     def is_displayed(player: Player):
         return player.round_number == C.NUM_ROUNDS
