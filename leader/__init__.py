@@ -154,7 +154,7 @@ class BeforeDecisionWP(MWP):
 
 
 def live_method(player, data):
-    print('Prediction submitted by {player.participant.code}; round {player.round_number}; group {player.group.id_in_subsession} ', data)
+    print(f'Prediction submitted by {player.participant.code}; round {player.round_number}; group {player.group.id_in_subsession} ', data)
     try:
         player.prediction = int(data.get('prediction'))
         predictions = [p.field_maybe_none(
@@ -188,7 +188,7 @@ class DecisionPage(Page):
                        Constants=C,
                        participant=player.participant,
                        session=player.session)
-        chat_context = chat_template_tag(context)
+        chat_context = chat_template_tag(context,nickname=player.role)
         return dict(chat_vars_for_js=chat_context)
 
     def post(self):
