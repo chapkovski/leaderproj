@@ -95,53 +95,8 @@ class Player(BasePlayer):
     def example_payoff(self):
         return self.endowment*(1-0.083)
     prediction = models.IntegerField()
-    q1 = models.StringField(label='Who decides the team final forecast in each round?   ',
-                            choices=["Any participant",
-                                     "All team members",
-                                     "The leader",
-                                     ],
-                            widget=widgets.RadioSelect)
-    q2 = models.StringField(label='How many forecasts should the group produce?',
-                            choices=["3",
-                                     "4",
-                                     "6",
-                                     ],
-                            widget=widgets.RadioSelect)
-    q3 = models.StringField(label='A MAPE score of > 50% is considered:',
-                            choices=["Accurate",
-                                     "Inaccurate",
-                                     "Acceptable", ],
-                            widget=widgets.RadioSelect)
 
 
-def q1_error_message(player, value):
-    if value != "The leader":
-        return C.WRONG_ANSWER
-
-
-def q2_error_message(player, value):
-    if value != "6":
-        return C.WRONG_ANSWER
-
-
-def q3_error_message(player, value):
-    if value != "Inaccurate":
-        return C.WRONG_ANSWER
-
-
-# PAGES
-def firstround(player: Player):
-    return player.round_number == 1
-
-
-class Instructions(Page):
-    is_displayed = firstround
-
-
-class Q(Page):
-    is_displayed = firstround
-    form_model: str = 'player'
-    form_fields: List[str] = ['q1', 'q2', 'q3']
 
 
 class IntroRound(Page):
@@ -249,8 +204,7 @@ def set_payoffs(group):
 
 
 page_sequence = [
-    Instructions,
-    Q,
+
     IntroRound,
     BeforeDecisionWP,
     DecisionPage,
