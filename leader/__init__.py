@@ -28,9 +28,10 @@ class C(BaseConstants):
     NAME_IN_URL = 'leader'
     PLAYERS_PER_GROUP = 3
 
-    LEADER_ROLE = 'Leader'
-    P1_ROLE = 'Participant 1'
-    P2_ROLE = 'Participant 2'
+    LEADER = 'Leader'
+    P1 = 'Participant 1'
+    P2 = 'Participant 2'
+    ROLES = [LEADER , P1 , P2 ]
     MAX_OLD_VALUES = 48
     TO_PREDICT = graph_data[MAX_OLD_VALUES:]
     GRAPHS_DATA = graph_data[:MAX_OLD_VALUES]
@@ -90,13 +91,16 @@ class Group(BaseGroup):
 
 class Player(BasePlayer):
     endowment = models.CurrencyField()
+    inner_role = models.StringField()
+
+    @property
+    def role(self):
+        return self.inner_role
 
     @property
     def example_payoff(self):
         return self.endowment*(1-0.083)
     prediction = models.IntegerField()
-
-
 
 
 class IntroRound(Page):
@@ -109,7 +113,8 @@ class BeforeDecisionWP(MWP):
 
 
 def live_method(player, data):
-    print(f'Prediction submitted by {player.participant.code}; round {player.round_number}; group {player.group.id_in_subsession} ', data)
+    print(
+        f'Prediction submitted by {player.participant.code}; round {player.round_number}; group {player.group.id_in_subsession} ', data)
     try:
         player.prediction = int(data.get('prediction'))
         predictions = [p.field_maybe_none(
@@ -135,7 +140,6 @@ class DecisionPage(Page):
 
     live_method = live_method
 
-
     @staticmethod
     def vars_for_template(player: Player):
         context = dict(player=player,
@@ -143,7 +147,7 @@ class DecisionPage(Page):
                        Constants=C,
                        participant=player.participant,
                        session=player.session)
-        chat_context = chat_template_tag(context,nickname=player.role)
+        chat_context = chat_template_tag(context, nickname=player.role)
         return dict(chat_vars_for_js=chat_context)
 
     def post(self):
@@ -168,7 +172,7 @@ class LeaderDecisionPage(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.role == C.LEADER_ROLE
+        return player.role == C.LEADER
 
 
 class ResultsWaitPage(MWP):
@@ -183,6 +187,7 @@ class Results(Page):
 class BeforeFinalResultsWP(WaitPage):
     template_name = 'video/templates/WaitPage.html'
     vars_for_template = vars_for_wp
+
     @staticmethod
     def is_displayed(player: Player):
         return player.round_number == C.NUM_ROUNDS
@@ -203,8 +208,17 @@ def set_payoffs(group):
         p.payoff = p.endowment*(1-mape)
 
 
-page_sequence = [
+class FirstWP(WaitPage):
+    group_by_arrival_time = True
 
+    @ staticmethod
+    def after_all_players_arrive(group: Group):
+        for p in group.get_players():
+            p.inner_role = C.ROLES[p.id_in_group-1]
+
+
+page_sequence = [
+    FirstWP,
     IntroRound,
     BeforeDecisionWP,
     DecisionPage,

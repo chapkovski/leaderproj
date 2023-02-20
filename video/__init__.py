@@ -26,6 +26,11 @@ templateEnv = jinja2.Environment(loader=templateLoader)
 # ENDDEBUG
 
 
+def creating_session(subsession):
+    for p in subsession.get_players():
+        p.endowment = subsession.session.config.get('endowment', 1)
+
+
 def vars_for_wp(player):
     return wpmethod(player, Player, Participant, dbq, C)
 
@@ -72,12 +77,13 @@ class C(BaseConstants):
     CONTROL = 'control'
     MANIPULATION = 'manipulation'
     TREATMENTS = [MANIPULATION, CONTROL]
-    VIDEOS_CONTROL = ['ddt_IGMMOrI'] * NUM_ROUNDS
+    VIDEOS_CONTROL = [dict(video='ddt_IGMMOrI', length=200)
+                      ] * NUM_ROUNDS
     VIDEOS_TREATMENT = [
-        'xNk-98TIW8s',
-        'ZZeGJs6A_wQ',
-        'dPX2sdl-j4g',
-        'zAsAHTb9thQ'
+        dict(video='xNk-98TIW8s', length=60),
+        dict(video='ZZeGJs6A_wQ', length=60),
+        dict(video='dPX2sdl-j4g', length=60),
+        dict(video='zAsAHTb9thQ', length=60),
     ]
     ERR_MSG = 'Please, re-read instructions'
 
@@ -127,8 +133,13 @@ def treatment_q3_error_message(player, value):
 
 
 class Player(BasePlayer):
+    @property
+    def example_payoff(self):
+        return self.endowment*(1-0.083)
+    endowment = models.CurrencyField()
     treatment = models.StringField()
     video = models.StringField()
+    video_duration = models.IntegerField()
     treatment_q1 = models.StringField(label='What role could a team leader play to improve team task results? ',
                                       choices=["Supervisor",
                                                "Bold leader",
@@ -198,9 +209,9 @@ class FirstWP(WaitPage):
         print(list(ps))
         return super().get_context_data()
 
-    # @ staticmethod
-    # def is_displayed(player):
-    #     return player.round_number == 1
+    @ staticmethod
+    def is_displayed(player):
+        return player.round_number == 1
 
     @ staticmethod
     def after_all_players_arrive(group: Group):
@@ -216,9 +227,11 @@ class FirstWP(WaitPage):
             ps = dbq(Player).filter(Player.participant == participant)
             for i in ps:
                 if treatment == C.CONTROL:
-                    i.video = C.VIDEOS_CONTROL[i.round_number-1]
+                    i.video = C.VIDEOS_CONTROL[i.round_number-1].get('video')
+                    i.video_duration = C.VIDEOS_CONTROL[i.round_number-1].get('length')
                 else:
-                    i.video = C.VIDEOS_TREATMENT[i.round_number-1]
+                    i.video = C.VIDEOS_TREATMENT[i.round_number-1].get('video')
+                    i.video_duration = C.VIDEOS_TREATMENT[i.round_number-1].get('length')
 
 
 def treatment_sorter(player):
@@ -230,14 +243,20 @@ def treatment_sorter(player):
 
 
 class Video(Page):
+    @staticmethod
+    def get_timeout_seconds(player):
+        return player.video_duration
     is_displayed = treatment_sorter
 
 
 class Q(Page):
+    @staticmethod
+    def get_timeout_seconds(player):
+        return 180
     form_model = 'player'
     checkboxes = [
 
-      
+
         'treatment_q2',
         'treatment_q3',
     ]
@@ -271,6 +290,8 @@ class AfterQWP(WaitPage):
     body_text = 'Please wait while other participants watch the video and answer the questions'
 
 # PAGES
+
+
 def lastround(player: Player):
     return player.round_number == C.NUM_ROUNDS
 
@@ -290,21 +311,27 @@ def q3_error_message(player, value):
         return C.WRONG_ANSWER
 
 
-
-class Instructions(Page):
+class GameInstructions(Page):
+    @staticmethod
+    def get_timeout_seconds(player):
+        return 180
     is_displayed = lastround
 
 
-class Q(Page):
+class GameQ(Page):
+    @staticmethod
+    def get_timeout_seconds(player):
+        return 180
     is_displayed = lastround
     form_model: str = 'player'
-    form_fields=['q1', 'q2', 'q3']
+    form_fields = ['q1', 'q2', 'q3']
+
 
 page_sequence = [
     FirstWP,
     Video,
     Q,
     AfterQWP,
-    Instructions,
-    Q
+    GameInstructions,
+    GameQ
 ]

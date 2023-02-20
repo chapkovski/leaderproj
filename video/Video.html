@@ -41,7 +41,8 @@ function onPlayerStateChange(event) {
   
   if (event.data == YT.PlayerState.ENDED) {
     console.debug("ZAKONCHIOLS!");
-    $('#next').removeClass('d-none')
+    $('#next').removeClass('d-none');
+    $('#form').submit()
   }
   if (event.data == YT.PlayerState.PAUSED) {
     console.debug("PAUZA!");

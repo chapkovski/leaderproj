@@ -17,7 +17,7 @@
       {% for p in group.get_players  %}
       <tr>
       <td>{{p.role}} 
-      {{if p.role == C.LEADER_ROLE}}  (you) {{endif}}
+      {{if p.role == C.LEADER}}  (you) {{endif}}
       </td>
       <td>{{p.field_maybe_none('prediction')}}</td>
       </tr>
