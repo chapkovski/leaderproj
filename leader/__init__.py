@@ -177,7 +177,7 @@ class LeaderDecisionPage(Page):
 
 
 class ResultsWaitPage(MWP):
-    body_text='<h2>Please wait while the leader of your group submits the final prediction for this round...</h2>'
+    body_text = '<h2>Please wait while the leader of your group submits the final prediction for this round...</h2>'
     template_name = 'video/templates/WaitPage.html'
     vars_for_template = vars_for_wp
 
@@ -215,10 +215,17 @@ class FirstWP(WaitPage):
     template_name = 'video/templates/WaitPage.html'
     vars_for_template = vars_for_wp
 
+    @staticmethod
+    def is_displayed(player):
+        return player.round_number == 1
+
     @ staticmethod
     def after_all_players_arrive(group: Group):
         for p in group.get_players():
-            p.inner_role = C.ROLES[p.id_in_group-1]
+            inner_role = C.ROLES[p.id_in_group-1]
+            for i in range(1, C.NUM_ROUNDS+1):
+                p.in_round(i).inner_role = inner_role
+            p.participant.vars['role'] = inner_role
 
 
 page_sequence = [

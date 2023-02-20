@@ -6,10 +6,10 @@ block body_main }} {% include 'otree/includes/TimeLimit.js.html' %}
   function liveRecv(data) {
     console.debug(' received a message!', data);
     if (data.group_done) {
-      document.getElementById('form').submit(); 
+      document.getElementById('form').submit();
     }
-    
-}
+
+  }
 
 </script>
 <div class="container-fluid">
@@ -18,45 +18,26 @@ block body_main }} {% include 'otree/includes/TimeLimit.js.html' %}
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div>
           <!-- Button trigger modal -->
-          <button
-            type="button"
-            class="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#exampleModal"
-          >
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
             Full instructions
           </button>
 
           <!-- Modal -->
-          <div
-            class="modal fade"
-            id="exampleModal"
-            tabindex="-1"
-            aria-labelledby="exampleModalLabel"
-            aria-hidden="true"
-          >
+          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg">
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="exampleModalLabel">
                     Full instructions
                   </h5>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                   {{include 'leader/includes/full_instructions.html'}}
                 </div>
                 <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     Close
                   </button>
                 </div>
@@ -76,12 +57,16 @@ block body_main }} {% include 'otree/includes/TimeLimit.js.html' %}
     </div>
     <div class="col-9">
       <div class="w-100 vh-100 d-flex flex-column">
-         {{include 'leader/includes/chart.html'}}
+        {{include 'leader/includes/chart.html'}}
         <div class="row d-flex flex-grow-1">
-          <div class="col-6 flex-grow-1 my-3">
+          <div class="col-6 flex-grow-1 my-0"  style="height:80%">
+            <div class="alert alert-info lead my-0">
+            Please chat with other group members first in the box below:</div>
             {{chat nickname=player.role }}
           </div>
           <div class="col-6 flex-grow-1 d-flex flex-column">
+            <div class="alert alert-danger lead my-0">Insert your personal
+              prediction in the box below! </div>
             <div class="card flex-grow-1 my-3">
               <div class="card-header">Info:</div>
               <div class="card-body">
@@ -89,18 +74,14 @@ block body_main }} {% include 'otree/includes/TimeLimit.js.html' %}
                   {% include 'otree/includes/TimeLimit.html' %}
                   <li class="list-group-item d-flex">
                     <div class="me-auto">Round number:</div>
-                    <span class="badge bg-primary rounded-pill"
-                      >{{view.round_number}}</span
-                    >
+                    <span class="badge bg-primary rounded-pill">{{view.round_number}}</span>
                   </li>
                   <li class="list-group-item d-flex">
                     <div class="me-auto">Your role:</div>
-                    <span class="badge bg-primary rounded-pill"
-                      >{{player.role}}</span
-                    >
+                    <span class="badge bg-primary rounded-pill">{{player.role}}</span>
                   </li>
-                  {# {{if player.role == 'Leader'}}  #}
-                  {% include 'leader/includes/leader_form.html' %} 
+                  {# {{if player.role == 'Leader'}} #}
+                  {% include 'leader/includes/leader_form.html' %}
                   {# {{endif}} #}
                 </ul>
               </div>
@@ -113,7 +94,7 @@ block body_main }} {% include 'otree/includes/TimeLimit.js.html' %}
           }
 
           .otree-chat__messages {
-            height: calc(100% - 50px);
+            height: calc(100% - 100px);
             overflow: auto;
             background: #eee;
             margin: 2px 0 5px 0;

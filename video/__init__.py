@@ -314,14 +314,14 @@ def q3_error_message(player, value):
 class GameInstructions(Page):
     @staticmethod
     def get_timeout_seconds(player):
-        return 180
+        return 300
     is_displayed = lastround
 
 
 class GameQ(Page):
     @staticmethod
     def get_timeout_seconds(player):
-        return 180
+        return 300
     is_displayed = lastround
     form_model: str = 'player'
     form_fields = ['q1', 'q2', 'q3']
