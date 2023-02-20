@@ -87,7 +87,7 @@ class MyWidget(BaseWidget):
 
 class C(BaseConstants):
     NAME_IN_URL = 'video'
-    PLAYERS_PER_GROUP = 3
+    PLAYERS_PER_GROUP = None
     NUM_ROUNDS = 4
     CONTROL = 'control'
     MANIPULATION = 'manipulation'
@@ -101,7 +101,7 @@ class C(BaseConstants):
         dict(video='zAsAHTb9thQ', length=60),
     ]
     ERR_MSG = 'Please, re-read instructions'
-
+    WRONG_ANSWER = 'Please re-read the instructions and check the answer'
 
 class Subsession(BaseSubsession):
     pass
@@ -216,23 +216,23 @@ class Player(BasePlayer):
 # PAGES
 
 
-class FirstWP(WaitPage):
-    group_by_arrival_time = True
+# class FirstWP(WaitPage):
+#     group_by_arrival_time = True
 
-    def get_context_data(self):
-        ps = self._get_participants_for_this_waitpage(
-            self._group_or_subsession
-        )
-        print(list(ps))
-        return super().get_context_data()
+#     def get_context_data(self):
+#         ps = self._get_participants_for_this_waitpage(
+#             self._group_or_subsession
+#         )
+#         print(list(ps))
+#         return super().get_context_data()
 
     # @ staticmethod
     # def is_displayed(player):
     #     return player.round_number == 1
 
-    @ staticmethod
-    def after_all_players_arrive(group: Group):
-        pass
+    # @ staticmethod
+    # def after_all_players_arrive(group: Group):
+    #     pass
 
 
 def treatment_sorter(player):
@@ -348,10 +348,10 @@ class Skipped(Page):
 
 
 page_sequence = [
-    FirstWP,
+    # FirstWP,
     Video,
     Q,
-    AfterQWP,
+    # AfterQWP,
     GameInstructions,
     GameQ,
     Skipped
