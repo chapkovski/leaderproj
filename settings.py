@@ -10,15 +10,7 @@ SESSION_CONFIGS = [
             ],
         num_demo_participants=1,
     ),
-    dict(
-        name='leader',
-        app_sequence=[
-            'video',
-            'leader',
-             'q',
-            ],
-        num_demo_participants=3,
-    ),
+
     dict(
         name='leader_baseline',
         app_sequence=[

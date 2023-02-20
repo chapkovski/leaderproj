@@ -14,7 +14,8 @@ import jinja2
 import json
 from starlette.datastructures import FormData as StarletteFormData
 from markupsafe import escape, Markup
-
+from starlette.responses import RedirectResponse
+from otree.constants import timeout_happened
 # from leader import live_method
 templates = Jinja2Templates(directory='video/templates')
 doc = """
@@ -27,8 +28,22 @@ templateEnv = jinja2.Environment(loader=templateLoader)
 
 
 def creating_session(subsession):
+
     for p in subsession.get_players():
         p.endowment = subsession.session.config.get('endowment', 1)
+        treatment = subsession.session.config['treatment']
+
+        p.treatment = treatment
+        p.participant.vars['treatment'] = treatment
+        i = p
+        if treatment == C.CONTROL:
+            i.video = C.VIDEOS_CONTROL[i.round_number-1].get('video')
+            i.video_duration = C.VIDEOS_CONTROL[i.round_number-1].get(
+                'length')
+        else:
+            i.video = C.VIDEOS_TREATMENT[i.round_number-1].get('video')
+            i.video_duration = C.VIDEOS_TREATMENT[i.round_number-1].get(
+                'length')
 
 
 def vars_for_wp(player):
@@ -133,6 +148,8 @@ def treatment_q3_error_message(player, value):
 
 
 class Player(BasePlayer):
+    skipped = models.BooleanField(initial=False)
+
     @property
     def example_payoff(self):
         return self.endowment*(1-0.083)
@@ -209,29 +226,13 @@ class FirstWP(WaitPage):
         print(list(ps))
         return super().get_context_data()
 
-    @ staticmethod
-    def is_displayed(player):
-        return player.round_number == 1
+    # @ staticmethod
+    # def is_displayed(player):
+    #     return player.round_number == 1
 
     @ staticmethod
     def after_all_players_arrive(group: Group):
-        for p in group.get_players():
-            participant = p.participant
-            if group.session.config.get('treatment'):
-                treatment = group.session.config.get('treatment')
-            else:
-                treatment = C.TREATMENTS[group.id_in_subsession % 2]
-            p.participant.vars['treatment'] = treatment
-            dbq(Player).filter(Player.participant ==
-                               participant,).update({"treatment": treatment, })
-            ps = dbq(Player).filter(Player.participant == participant)
-            for i in ps:
-                if treatment == C.CONTROL:
-                    i.video = C.VIDEOS_CONTROL[i.round_number-1].get('video')
-                    i.video_duration = C.VIDEOS_CONTROL[i.round_number-1].get('length')
-                else:
-                    i.video = C.VIDEOS_TREATMENT[i.round_number-1].get('video')
-                    i.video_duration = C.VIDEOS_TREATMENT[i.round_number-1].get('length')
+        pass
 
 
 def treatment_sorter(player):
@@ -296,6 +297,10 @@ def lastround(player: Player):
     return player.round_number == C.NUM_ROUNDS
 
 
+def is_skipped(player: Player):
+    return player.skipped
+
+
 def q1_error_message(player, value):
     if value != "The leader":
         return C.WRONG_ANSWER
@@ -321,10 +326,25 @@ class GameInstructions(Page):
 class GameQ(Page):
     @staticmethod
     def get_timeout_seconds(player):
-        return 300
+        return 240
     is_displayed = lastround
     form_model: str = 'player'
     form_fields = ['q1', 'q2', 'q3']
+
+    def post(self):
+        post_data = self._form_data
+
+        auto_submitted = post_data.get(timeout_happened)
+        if auto_submitted:
+            self.player.skipped = True
+        return super().post()
+
+
+class Skipped(Page):
+    is_displayed = is_skipped
+
+    def get(self):
+        return RedirectResponse('https://app.prolific.co/submissions/complete?cc=TIME_OUT')
 
 
 page_sequence = [
@@ -333,5 +353,6 @@ page_sequence = [
     Q,
     AfterQWP,
     GameInstructions,
-    GameQ
+    GameQ,
+    Skipped
 ]
