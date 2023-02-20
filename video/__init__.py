@@ -344,7 +344,7 @@ class Skipped(Page):
     is_displayed = is_skipped
 
     def get(self):
-        return RedirectResponse('https://app.prolific.co/submissions/complete?cc=TIME_OUT')
+        return RedirectResponse(self.session.config.get('prolific_timeout_url'))
 
 
 page_sequence = [
