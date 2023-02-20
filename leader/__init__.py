@@ -31,7 +31,7 @@ class C(BaseConstants):
     LEADER = 'Leader'
     P1 = 'Participant 1'
     P2 = 'Participant 2'
-    ROLES = [LEADER , P1 , P2 ]
+    ROLES = [LEADER, P1, P2]
     MAX_OLD_VALUES = 48
     TO_PREDICT = graph_data[MAX_OLD_VALUES:]
     GRAPHS_DATA = graph_data[:MAX_OLD_VALUES]
@@ -104,7 +104,7 @@ class Player(BasePlayer):
 
 
 class IntroRound(Page):
-    pass
+    timeout_seconds = 60
 
 
 class BeforeDecisionWP(MWP):
@@ -167,6 +167,7 @@ class BeforeLeaderDecisionWP(MWP):
 
 
 class LeaderDecisionPage(Page):
+    timeout_seconds = 120
     form_fields = ['final_prediction']
     form_model = 'group'
 
@@ -176,12 +177,13 @@ class LeaderDecisionPage(Page):
 
 
 class ResultsWaitPage(MWP):
+    body_text='<h2>Please wait while the leader of your group submits the final prediction for this round...</h2>'
     template_name = 'video/templates/WaitPage.html'
     vars_for_template = vars_for_wp
 
 
 class Results(Page):
-    pass
+    timeout_seconds = 120
 
 
 class BeforeFinalResultsWP(WaitPage):
@@ -210,6 +212,8 @@ def set_payoffs(group):
 
 class FirstWP(WaitPage):
     group_by_arrival_time = True
+    template_name = 'video/templates/WaitPage.html'
+    vars_for_template = vars_for_wp
 
     @ staticmethod
     def after_all_players_arrive(group: Group):
