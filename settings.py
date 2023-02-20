@@ -50,7 +50,7 @@ SESSION_CONFIG_DEFAULTS = dict(
     real_world_currency_per_point=1.00, participation_fee=0.00, doc="",
     round_one_minutes=10,
     other_round_minutes=3,
-    endowment=6,
+    endowment=5,
     prolific_redirect_url='https://app.prolific.co/submissions/complete?cc=CI6LURUB'
 )
 
@@ -62,7 +62,7 @@ SESSION_FIELDS = []
 LANGUAGE_CODE = 'en'
 
 # e.g. EUR, GBP, CNY, JPY
-REAL_WORLD_CURRENCY_CODE = 'USD'
+REAL_WORLD_CURRENCY_CODE = 'GBP'
 USE_POINTS = False
 
 ADMIN_USERNAME = 'admin'
