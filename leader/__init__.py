@@ -217,7 +217,7 @@ def set_payoffs(group):
 class FirstWP(WaitPage):
     body_text = """<h2>Please be patient: it may take up to <span class="text-danger">5 minutes</span>
     till your partners reach this page and you will be able to proceed further.</h2> 
-    <h3>If you have any questions, please communicate with us via Prolific or email: <a href="mailto:chapkovski@uni-bonn.de">chapkovski@uni-bonn.de</a>"</h3>"""
+    <h3>If you have any questions, please communicate with us via Prolific or email: <a href="mailto:chapkovski@uni-bonn.de">chapkovski@uni-bonn.de</a></h3>"""
     group_by_arrival_time = True
     template_name = 'video/templates/WaitPage.html'
     vars_for_template = vars_for_wp
