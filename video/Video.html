@@ -1,5 +1,7 @@
 {{ block title }}
-    Video {{player.round_number}}: Watch this video before to proceed to the next page
+    
+    {% if player.treatment == C.MANIPULATION  %}
+    Video {{player.round_number}} out of {{C.NUM_ROUNDS}}:{% endif %} Watch this video before to proceed to the next page
 {{ endblock }}
 {{ block content }}
 <div class="alert alert-info text-center lead">
