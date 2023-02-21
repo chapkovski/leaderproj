@@ -1,15 +1,7 @@
 from os import environ
 
 SESSION_CONFIGS = [
-    dict(
-        name='q_only',
-        display_name='Final questionnaire only',
-        app_sequence=[
-            'q',
-            
-            ],
-        num_demo_participants=1,
-    ),
+   
 
     dict(
         name='leader_baseline',
@@ -30,6 +22,15 @@ SESSION_CONFIGS = [
             ],
         treatment='manipulation',
         num_demo_participants=3,
+    ),
+     dict(
+        name='q_only',
+        display_name='Final questionnaire only',
+        app_sequence=[
+            'q',
+            
+            ],
+        num_demo_participants=1,
     ),
 ]
 
