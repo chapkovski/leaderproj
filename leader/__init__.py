@@ -20,6 +20,7 @@ def vars_for_wp(player):
 
 def creating_session(subsession):
     for p in subsession.get_players():
+        p.participant.vars['treatment'] =  subsession.session.config.get('treatment', C.CONTROL)
         p.endowment = subsession.session.config.get('endowment', 1)
     subsession.true_value = C.TO_PREDICT[subsession.round_number-1]
 
@@ -27,7 +28,10 @@ def creating_session(subsession):
 class C(BaseConstants):
     NAME_IN_URL = 'leader'
     PLAYERS_PER_GROUP = 3
-
+    CONTROL = 'control'
+    MANIPULATION = 'manipulation'
+    LEADER_MSG_CONTROL = ' Remember, good leaders are decisive, show the way, and take risks.'
+    LEADER_MSG_MANIPULATION = 'Remember,  good leaders facilitate discussions, learn from previous mistakes, and defer decisions to expert team members.'
     LEADER = 'Leader'
     P1 = 'Participant 1'
     P2 = 'Participant 2'
@@ -211,7 +215,7 @@ def set_payoffs(group):
 
 
 class FirstWP(WaitPage):
-    body_text="""<h2>Please be patient: it may take up to <span class="text-danger">5 minutes</span>
+    body_text = """<h2>Please be patient: it may take up to <span class="text-danger">5 minutes</span>
     till your partners reach this page and you will be able to proceed further.</h2> 
     <h3>If you have any questions, please communicate with us via Prolific or email: <a href="mailto:chapkovski@uni-bonn.de">chapkovski@uni-bonn.de</a>"</h3>"""
     group_by_arrival_time = True

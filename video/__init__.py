@@ -103,6 +103,7 @@ class C(BaseConstants):
     ERR_MSG = 'Please, re-read instructions'
     WRONG_ANSWER = 'Please re-read the instructions and check the answer'
 
+
 class Subsession(BaseSubsession):
     pass
 
@@ -216,48 +217,49 @@ class Player(BasePlayer):
 # PAGES
 
 
-# class FirstWP(WaitPage):
-#     group_by_arrival_time = True
-
-#     def get_context_data(self):
-#         ps = self._get_participants_for_this_waitpage(
-#             self._group_or_subsession
-#         )
-#         print(list(ps))
-#         return super().get_context_data()
-
-    # @ staticmethod
-    # def is_displayed(player):
-    #     return player.round_number == 1
-
-    # @ staticmethod
-    # def after_all_players_arrive(group: Group):
-    #     pass
-
-
 def treatment_sorter(player):
-
+    if player.skipped:
+        return False
     if player.treatment == C.CONTROL:
         return player.round_number == 1
     else:
         return True
+# CONDITIONS AND HELPERS
 
 
-class Video(Page):
+def firstround(player: Player):
+    return player.round_number == 1
+
+
+def is_skipped(player: Player):
+    return player.skipped
+
+
+def if_skipped_BNP(player, timeout_happened):
+    player.skipped = timeout_happened
+    
+
+
+# PAGES
+class NonSkippedPage(Page):
+    def is_displayed(x): return not x.skipped
+
+
+class Video(NonSkippedPage):
     @staticmethod
     def get_timeout_seconds(player):
         return player.video_duration
     is_displayed = treatment_sorter
 
 
-class Q(Page):
+class Q(NonSkippedPage):
+    before_next_page = if_skipped_BNP
+
     @staticmethod
     def get_timeout_seconds(player):
         return 180
     form_model = 'player'
     checkboxes = [
-
-
         'treatment_q2',
         'treatment_q3',
     ]
@@ -272,6 +274,8 @@ class Q(Page):
 
     @ staticmethod
     def is_displayed(player: Player):
+        if player.skipped:
+            return False
         if player.treatment == C.CONTROL:
             return player.round_number == 1
         return player.round_number < C.NUM_ROUNDS
@@ -286,48 +290,18 @@ class Q(Page):
             return [f'treatment_q{player.round_number}']
 
 
-class AfterQWP(WaitPage):
-    is_displayed = treatment_sorter
-    body_text = 'Please wait while other participants watch the video and answer the questions'
-
-# PAGES
-
-
-def lastround(player: Player):
-    return player.round_number == C.NUM_ROUNDS
-
-
-def is_skipped(player: Player):
-    return player.skipped
-
-
-def q1_error_message(player, value):
-    if value != "The leader":
-        return C.WRONG_ANSWER
-
-
-def q2_error_message(player, value):
-    if value != "6":
-        return C.WRONG_ANSWER
-
-
-def q3_error_message(player, value):
-    if value != "Inaccurate":
-        return C.WRONG_ANSWER
-
-
 class GameInstructions(Page):
     @staticmethod
     def get_timeout_seconds(player):
         return 300
-    is_displayed = lastround
+    is_displayed = firstround
 
 
 class GameQ(Page):
     @staticmethod
     def get_timeout_seconds(player):
         return 240
-    is_displayed = lastround
+    is_displayed = firstround
     form_model: str = 'player'
     form_fields = ['q1', 'q2', 'q3']
 
@@ -347,12 +321,32 @@ class Skipped(Page):
         return RedirectResponse(self.session.config.get('prolific_timeout_url'))
 
 
+class AfterQWP(WaitPage):
+    is_displayed = treatment_sorter
+    body_text = 'Please wait while other participants watch the video and answer the questions'
+
+# PAGES
+
+
+def q1_error_message(player, value):
+    if value != "The leader":
+        return C.WRONG_ANSWER
+
+
+def q2_error_message(player, value):
+    if value != "6":
+        return C.WRONG_ANSWER
+
+
+def q3_error_message(player, value):
+    if value != "Inaccurate":
+        return C.WRONG_ANSWER
+
+
 page_sequence = [
-    # FirstWP,
-    Video,
-    Q,
-    # AfterQWP,
     GameInstructions,
     GameQ,
+    Video,
+    Q,
     Skipped
 ]

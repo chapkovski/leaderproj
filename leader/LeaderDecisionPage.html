@@ -1,35 +1,40 @@
 {{ block title }}
-    Leader decision
+Leader decision
 {{ endblock }}
 
 {{ block content }}
+<div class="alert alert-primary fw-bold lead">
+  {% if participant.vars.treatment == C.CONTROL %}
+  {{C.LEADER_MSG_CONTROL}}
+  {% else %}
+  {{C.LEADER_MSG_MANIPULATION}}
+  {% endif %}</div>
 {{include 'leader/includes/chart.html'}}
 <div class="card my-3">
-    <div class="card-header">Make a final prediction</div>
-    <div class="card-body">
-      <div class="card-text">
+  <div class="card-header">Make a final prediction</div>
+  <div class="card-body">
+    <div class="card-text">
       <table class="table table-hover table-stripped">
-      <thead>
-      <tr>
-      <th>Participant:</th>
-      <th>Prediction:</th>
-      </tr></thead>
-      {% for p in group.get_players  %}
-      <tr>
-      <td>{{p.role}} 
-      {{if p.role == C.LEADER}}  (you) {{endif}}
-      </td>
-      <td>{{p.field_maybe_none('prediction')}}</td>
-      </tr>
-      {% endfor %}
+        <thead>
+          <tr>
+            <th>Participant:</th>
+            <th>Prediction:</th>
+          </tr>
+        </thead>
+        {% for p in group.get_players %}
+        <tr>
+          <td>{{p.role}}
+            {{if p.role == C.LEADER}} (you) {{endif}}
+          </td>
+          <td>{{p.field_maybe_none('prediction')}}</td>
+        </tr>
+        {% endfor %}
       </table>
       {{formfields}}
-      </div>
     </div>
   </div>
 </div>
+</div>
 
-    {{ next_button }}
+{{ next_button }}
 {{ endblock }}
-
-
