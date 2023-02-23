@@ -77,13 +77,14 @@ class Group(BaseGroup):
 
     @property
     def prognosis_data(self):
-
-        p = dbq(Group).filter(
-            Group.session == self.session,
-            Group.round_number < self.round_number
-        ).order_by('round_number').with_entities(Group.final_prediction)
-        ready_prognosis = [i for [i] in list(p)]
-
+        
+        # p = dbq(Group).filter(
+        #     Group.pk==self.pk,
+        #     Group.session == self.session,
+        #     Group.round_number < self.round_number
+        # ).order_by('round_number').with_entities(Group.final_prediction)
+        # ready_prognosis = [i for [i] in list(p)]
+        ready_prognosis = [i.final_prediction for i in self.in_previous_rounds()]
         empty = [None for i in range(len(C.GRAPHS_DATA))]
         return empty + ready_prognosis
 
