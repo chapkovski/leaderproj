@@ -6,7 +6,7 @@
         <div class="row h-50 d-inline-block w-100" id="chartwrapper">
           <div id="container"></div>
           <script>
-            var chart = new Highcharts.chart(
+            var chart = Highcharts.chart('container',
               {
                 exporting: {
                   enabled: false,
@@ -15,9 +15,7 @@
                   enabled: false,
                 },
                 chart: {
-                  renderTo: "container",
                   type: "line",
-
                   height: "400px",
                 },
                 title: {
