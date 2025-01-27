@@ -7,7 +7,7 @@ from typing import List
 from otree.database import dbq
 from video.methods import wpmethod
 with open('leader/data/graph.csv') as csvfile:
-    graph_data = [int(i[0]) for i in csv.reader(csvfile)]
+    graph_data = [float(i[0]) for i in csv.reader(csvfile)]
 
 doc = """
 Leader proj. by Philipp Chapkovski (UBonn)
@@ -45,7 +45,7 @@ class C(BaseConstants):
 
 
 class Subsession(BaseSubsession):
-    true_value = models.IntegerField()
+    true_value = models.FloatField()
 
 
 class Group(BaseGroup):
