@@ -2,107 +2,124 @@
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
-
-        <div class="row h-50 d-inline-block w-100" id="chartwrapper">
-          <div id="container"></div>
-          <script>
-            var chart = Highcharts.chart("container",
-              {
+<style>
+    #chartwrapper {
+        min-height: 400px !important; /* Adjust based on your preference */
+    }
+</style>
+<div class="row h-50 d-inline-block w-100" id="chartwrapper">
+    <div id="container"></div>
+    <script>
+        var chart = Highcharts.chart("container",
+            {
+                legend: {
+                    enabled: true,
+                    layout: 'vertical', // Options: 'horizontal' or 'vertical'
+                    align: 'right',      // Positioning: 'left', 'center', 'right'
+                    verticalAlign: 'top', // 'top', 'middle', 'bottom'
+                    x: -10, // Adjust horizontal positioning (move left/right)
+                    y: 50,  // Adjust vertical positioning (move up/down)
+                    floating: true, // Allows the legend to be placed over the chart
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Optional: Adds a transparent white background for better visibility
+                    borderRadius: 5,  // Optional: Adds rounded corners
+                    borderWidth: 1, // Optional: Adds a border
+                    shadow: false // Optional: Removes shadow
+                },
                 exporting: {
-                  enabled: false,
+                    enabled: false,
                 },
                 credits: {
-                  enabled: false,
+                    enabled: false,
                 },
                 chart: {
 
-                  type: "line",
+                    type: "line",
 
-                  height: "400px",
+                    height: "500px",
                 },
                 title: {
-                  text: "Sales of ACME Corp.",
+                    text: "Sales of ACME Corp.",
                 },
                 subtitle: {
-                  text: "",
+                    text: "",
                 },
                 xAxis: {
-                  allowDecimals: false,
-                  reversed: false,
-                  title: {
-                    enabled: true,
-                    text: "Months",
-                  },
+                    allowDecimals: false,
+                    reversed: false,
+                    title: {
+                        enabled: true,
+                        text: "Months",
+                    },
 
-                  maxPadding: 0.05,
-                  showLastLabel: true,
+                    maxPadding: 0.05,
+                    showLastLabel: true,
                 },
                 yAxis: {
-                  title: {
-                    text: "sales $M",
-                  },
-                  labels: {
-                    format: "{value}",
-                  },
-                  
-                  lineWidth: 2,
+                    title: {
+                        text: "sales $M",
+                    },
+                    labels: {
+                        format: "{value}",
+                    },
+
+                    lineWidth: 2,
                 },
-                legend: {
-                  enabled: true,
-                },
+
                 tooltip: {
-                  headerFormat: "<b>{series.name}</b><br/>",
-                  pointFormat: " {point.y}",
+                    headerFormat: "<b>{series.name}</b><br/>",
+                    pointFormat: " {point.y}",
                 },
                 plotOptions: {
-                  series: {
-                    states: {
-            inactive: {
-                opacity: 1
-            }
-        },
-                    marker: {
-                      
-                      symbol: 'circle',
-                      enable: true,
-                      radius:5
+                    series: {
+                        states: {
+                            inactive: {
+                                opacity: 1
+                            }
+                        },
+                        marker: {
+
+                            symbol: 'circle',
+                            enable: true,
+                            radius: 5
+                        },
                     },
-                  },
                 },
-                
-                series: [ 
-                        {{if view.round_number > 1 }} 
-                    {name:'Your forecast',
-                        data:{{group.prognosis_data|json}},
+
+                series: [
+                    {{if view.round_number > 1 }}
+                    {
+                        name: 'Your forecast',
+                        data: {{group.prognosis_data|json}},
                         dashStyle: 'ShortDot'
                     },
-                    {name:'True values',
-                        data:{{group.true_values|json}},
+                    {
+                        name: 'True values',
+                        data: {{group.true_values|json}},
                         dashStyle: 'Solid'
                     },
                     {{endif}}
-                  {
-                    
-                    name:'Previous values',
-                    data: {{C.GRAPHS_DATA|json}},
-                    
-                  },
+                    {
+
+                        name: 'Previous values',
+                        data: {{C.GRAPHS_DATA|json}},
+
+                    },
                 ],
-              },
-              function (chart) {
+            },
+            function (chart) {
                 var setHeight = function () {
-                  let box = document.getElementById("chartwrapper");
-                  let width = box.offsetWidth;
-                  let height = box.offsetHeight;
-                  chart.setSize(width, height - 20);
+                    let box = document.getElementById("chartwrapper");
+                    let width = box.offsetWidth;
+                    let height = box.offsetHeight;
+                    chart.setSize(width, height - 20);
                 };
 
                 $(window).resize(setHeight);
 
                 setHeight();
-              }
-            );
-          </script>
-        </div>
+            }
+        );
+    </script>
+</div>
     
      
