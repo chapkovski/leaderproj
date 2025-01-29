@@ -6,7 +6,7 @@ SESSION_CONFIGS = [
     dict(
         name='leader_baseline',
         app_sequence=[
-            # 'video',
+            'video',
             'leader',
              'q',
             ],
@@ -23,15 +23,15 @@ SESSION_CONFIGS = [
         treatment='manipulation',
         num_demo_participants=3,
     ),
-     dict(
-        name='q_only',
-        display_name='Final questionnaire only',
-        app_sequence=[
-            'q',
-            
-            ],
-        num_demo_participants=1,
-    ),
+    #  dict(
+    #     name='q_only',
+    #     display_name='Final questionnaire only',
+    #     app_sequence=[
+    #         'q',
+    #
+    #         ],
+    #     num_demo_participants=1,
+    # ),
 ]
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
