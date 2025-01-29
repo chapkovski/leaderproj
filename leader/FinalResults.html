@@ -17,7 +17,7 @@
    {{for g in group.in_all_rounds}}
    <tr>
    <td>Round {{g.round_number}}</td>
-   <td>{{g.final_prediction}}</td>
+   <td>{{g.field_maybe_none('final_prediction')}}</td>
    <td>{{g.subsession.true_value}}</td>
    <td>{{g.deviation}}</td>
    <td>{{g.abs_deviation}}</td>

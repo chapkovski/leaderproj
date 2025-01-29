@@ -6,6 +6,9 @@ from otree.models import Participant
 from typing import List
 from otree.database import dbq
 from video.methods import wpmethod
+from pprint import pprint
+import json
+
 with open('leader/data/graph.csv') as csvfile:
     graph_data = [float(i[0]) for i in csv.reader(csvfile)]
 
@@ -20,9 +23,9 @@ def vars_for_wp(player):
 
 def creating_session(subsession):
     for p in subsession.get_players():
-        p.participant.vars['treatment'] =  subsession.session.config.get('treatment', C.CONTROL)
+        p.participant.vars['treatment'] = subsession.session.config.get('treatment', C.CONTROL)
         p.endowment = subsession.session.config.get('endowment', 1)
-    subsession.true_value = C.TO_PREDICT[subsession.round_number-1]
+    subsession.true_value = C.TO_PREDICT[subsession.round_number - 1]
 
 
 class C(BaseConstants):
@@ -51,18 +54,20 @@ class Subsession(BaseSubsession):
 class Group(BaseGroup):
     def mape(self):
         allrels = [i.rel_deviation for i in self.in_all_rounds()]
-        return sum(allrels)/len(allrels)
+        return sum(allrels) / len(allrels)
 
     def mape_formatted(self):
         return f'{self.mape():.0%}'
 
     @property
     def deviation(self):
-        return self.final_prediction-self.subsession.true_value
+        final_prediction = self.field_maybe_none('final_prediction') or 0
+
+        return final_prediction - self.subsession.true_value
 
     @property
     def rel_deviation(self):
-        return self.abs_deviation/self.subsession.true_value
+        return self.abs_deviation / self.subsession.true_value
 
     @property
     def rel_deviation_formatted(self):
@@ -77,7 +82,6 @@ class Group(BaseGroup):
 
     @property
     def prognosis_data(self):
-        
         # p = dbq(Group).filter(
         #     Group.pk==self.pk,
         #     Group.session == self.session,
@@ -90,13 +94,36 @@ class Group(BaseGroup):
 
     @property
     def true_values(self):
-        empty = [None for i in range(len(C.GRAPHS_DATA)-1)]
-        return empty + [C.LAST_ITEM] + C.TO_PREDICT[:self.round_number-1]
+        empty = [None for i in range(len(C.GRAPHS_DATA) - 1)]
+        return empty + [C.LAST_ITEM] + C.TO_PREDICT[:self.round_number - 1]
 
 
 class Player(BasePlayer):
     endowment = models.CurrencyField()
     inner_role = models.StringField()
+
+    # Big Five Personality Traits
+    big_reserved = models.IntegerField()
+    big_trusting = models.IntegerField()
+    big_lazy = models.IntegerField()
+    big_relaxed = models.IntegerField()
+    big_artisticInterests = models.IntegerField()
+    big_outgoing = models.IntegerField()
+    big_faultFinding = models.IntegerField()
+    big_thorough = models.IntegerField()
+    big_nervous = models.IntegerField()
+    big_imagination = models.IntegerField()
+
+    # Mindful Organizing Scale
+    mind_discussWhatToLookFor = models.IntegerField()
+    mind_identifyActivities = models.IntegerField()
+    mind_discussAlternatives = models.IntegerField()
+    mind_goodMapOfTalents = models.IntegerField()
+    mind_discussUniqueSkills = models.IntegerField()
+    mind_talkAboutMistakes = models.IntegerField()
+    mind_discussErrorPrevention = models.IntegerField()
+    mind_resolveProblemWithSkills = models.IntegerField()
+    mind_poolExpertiseInCrisis = models.IntegerField()
 
     @property
     def role(self):
@@ -104,7 +131,8 @@ class Player(BasePlayer):
 
     @property
     def example_payoff(self):
-        return self.endowment*(1-0.083)
+        return self.endowment * (1 - 0.083)
+
     prediction = models.IntegerField()
 
 
@@ -119,7 +147,8 @@ class BeforeDecisionWP(MWP):
 
 def live_method(player, data):
     print(
-        f'Prediction submitted by {player.participant.code}; round {player.round_number}; group {player.group.id_in_subsession} ', data)
+        f'Prediction submitted by {player.participant.code}; round {player.round_number}; group {player.group.id_in_subsession} ',
+        data)
     try:
         player.prediction = int(data.get('prediction'))
         predictions = [p.field_maybe_none(
@@ -140,8 +169,8 @@ class DecisionPage(Page):
     def get_timeout_seconds(player: Player):
         MINUTE = 60
         if player.round_number == 1:
-            return player.session.config.get('round_one_minutes')*MINUTE
-        return player.session.config.get('other_round_minutes')*MINUTE
+            return player.session.config.get('round_one_minutes') * MINUTE
+        return player.session.config.get('other_round_minutes') * MINUTE
 
     live_method = live_method
 
@@ -198,6 +227,7 @@ class BeforeFinalResultsWP(WaitPage):
     @staticmethod
     def is_displayed(player: Player):
         return player.round_number == C.NUM_ROUNDS
+
     after_all_players_arrive = 'set_payoffs'
 
 
@@ -212,7 +242,7 @@ class FinalResults(Page):
 def set_payoffs(group):
     mape = group.mape()
     for p in group.get_players():
-        p.payoff = p.endowment*(1-mape)
+        p.payoff = p.endowment * (1 - mape)
 
 
 class FirstWP(WaitPage):
@@ -227,13 +257,72 @@ class FirstWP(WaitPage):
     def is_displayed(player):
         return player.round_number == 1
 
-    @ staticmethod
+    @staticmethod
     def after_all_players_arrive(group: Group):
         for p in group.get_players():
-            inner_role = C.ROLES[p.id_in_group-1]
-            for i in range(1, C.NUM_ROUNDS+1):
+            inner_role = C.ROLES[p.id_in_group - 1]
+            for i in range(1, C.NUM_ROUNDS + 1):
                 p.in_round(i).inner_role = inner_role
             p.participant.vars['role'] = inner_role
+
+
+# PAGES
+class big5Page(Page):
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.round_number == C.NUM_ROUNDS
+
+    def post(self):
+        post_data = self._form_data
+        raw_data = post_data.get('surveyResults')
+        pprint(raw_data)
+        if raw_data:
+            try:
+                survey_data = json.loads(raw_data)
+
+                # Extract Big Five and Mindful Organizing responses
+                big5 = survey_data.get('bigFive', {})
+                mindful = survey_data.get('mindfulOrganizing', {})
+
+                # Map Big Five responses
+                big5_mapping = {
+                    "reserved": "big_reserved",
+                    "trusting": "big_trusting",
+                    "lazy": "big_lazy",
+                    "relaxed": "big_relaxed",
+                    "artisticInterests": "big_artisticInterests",
+                    "outgoing": "big_outgoing",
+                    "faultFinding": "big_faultFinding",
+                    "thorough": "big_thorough",
+                    "nervous": "big_nervous",
+                    "imagination": "big_imagination"
+                }
+                for key, field_name in big5_mapping.items():
+                    if key in big5:
+                        setattr(self.player, field_name, int(big5[key]))
+
+                # Map Mindful Organizing responses
+                mindful_mapping = {
+                    "discussWhatToLookFor": "mind_discussWhatToLookFor",
+                    "identifyActivities": "mind_identifyActivities",
+                    "discussAlternatives": "mind_discussAlternatives",
+                    "goodMapOfTalents": "mind_goodMapOfTalents",
+                    "discussUniqueSkills": "mind_discussUniqueSkills",
+                    "talkAboutMistakes": "mind_talkAboutMistakes",
+                    "discussErrorPrevention": "mind_discussErrorPrevention",
+                    "resolveProblemWithSkills": "mind_resolveProblemWithSkills",
+                    "poolExpertiseInCrisis": "mind_poolExpertiseInCrisis"
+                }
+                for key, field_name in mindful_mapping.items():
+                    if key in mindful:
+                        setattr(self.player, field_name, int(mindful[key]))
+
+            except json.JSONDecodeError:
+                print("Error: Invalid JSON data received")
+            except Exception as e:
+                print(f"Unexpected error: {e}")
+
+        return super().post()
 
 
 page_sequence = [
@@ -246,5 +335,6 @@ page_sequence = [
     ResultsWaitPage,
     Results,
     BeforeFinalResultsWP,
+    big5Page,
     FinalResults
 ]
