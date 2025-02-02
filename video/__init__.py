@@ -1,4 +1,3 @@
-
 from otree.models import Participant
 from .methods import wpmethod
 from typing import Any
@@ -16,6 +15,7 @@ from starlette.datastructures import FormData as StarletteFormData
 from markupsafe import escape, Markup
 from starlette.responses import RedirectResponse
 from otree.constants import timeout_happened
+
 # from leader import live_method
 templates = Jinja2Templates(directory='video/templates')
 doc = """
@@ -24,11 +24,12 @@ Intro (video) to leader proj.
 # DEBUG
 templateLoader = jinja2.FileSystemLoader(searchpath="video/templates")
 templateEnv = jinja2.Environment(loader=templateLoader)
+
+
 # ENDDEBUG
 
 
 def creating_session(subsession):
-
     for p in subsession.get_players():
         p.endowment = subsession.session.config.get('endowment', 1)
         treatment = subsession.session.config['treatment']
@@ -37,12 +38,12 @@ def creating_session(subsession):
         p.participant.vars['treatment'] = treatment
         i = p
         if treatment == C.CONTROL:
-            i.video = C.VIDEOS_CONTROL[i.round_number-1].get('video')
-            i.video_duration = C.VIDEOS_CONTROL[i.round_number-1].get(
+            i.video = C.VIDEOS_CONTROL[i.round_number - 1].get('video')
+            i.video_duration = C.VIDEOS_CONTROL[i.round_number - 1].get(
                 'length')
         else:
-            i.video = C.VIDEOS_TREATMENT[i.round_number-1].get('video')
-            i.video_duration = C.VIDEOS_TREATMENT[i.round_number-1].get(
+            i.video = C.VIDEOS_TREATMENT[i.round_number - 1].get('video')
+            i.video_duration = C.VIDEOS_TREATMENT[i.round_number - 1].get(
                 'length')
 
 
@@ -153,7 +154,8 @@ class Player(BasePlayer):
 
     @property
     def example_payoff(self):
-        return self.endowment*(1-0.083)
+        return self.endowment * (1 - 0.083)
+
     endowment = models.CurrencyField()
     treatment = models.StringField()
     video = models.StringField()
@@ -165,18 +167,20 @@ class Player(BasePlayer):
                                                "Facilitator"],
                                       widget=widgets.RadioSelect
                                       )
-    treatment_q2 = models.StringField(label='What constitutes effective facilitation strategies? <br><b>(select TWO choices)</b>',
-                                      widget=MyWidget(choices=["Ensure participation",
-                                                               "Assigning tasks effectively.",
-                                                               "Connect current task to previous performance.",
-                                                               "Being assertive and clear in providing direction.",
-                                                               ]))
-    treatment_q3 = models.StringField(label="How aircraft carriers' crews conduct discussions? <br><b>(select TWO choices)</b>",
-                                      widget=MyWidget(choices=["They focus on their successes and reassure each other.",
-                                                               "They focus on error and what could go wrong.",
-                                                               "They are confident in their leader’s decisions and follow suit.",
-                                                               "They could defer decisions to team members.",
-                                                               ],))
+    treatment_q2 = models.StringField(
+        label='What constitutes effective facilitation strategies? <br><b>(select TWO choices)</b>',
+        widget=MyWidget(choices=["Ensure participation",
+                                 "Assigning tasks effectively.",
+                                 "Connect current task to previous performance.",
+                                 "Being assertive and clear in providing direction.",
+                                 ]))
+    treatment_q3 = models.StringField(
+        label="How aircraft carriers' crews conduct discussions? <br><b>(select TWO choices)</b>",
+        widget=MyWidget(choices=["They focus on their successes and reassure each other.",
+                                 "They focus on error and what could go wrong.",
+                                 "They are confident in their leader’s decisions and follow suit.",
+                                 "They could defer decisions to team members.",
+                                 ], ))
     control_q1 = models.StringField(label='When is a transactional leader effective? When there is a need... ',
                                     choices=[
                                         '...for creative work',
@@ -214,6 +218,7 @@ class Player(BasePlayer):
                                      "Acceptable", ],
                             widget=widgets.RadioSelect)
 
+
 # PAGES
 
 
@@ -224,6 +229,8 @@ def treatment_sorter(player):
         return player.round_number == 1
     else:
         return True
+
+
 # CONDITIONS AND HELPERS
 
 
@@ -237,18 +244,19 @@ def is_skipped(player: Player):
 
 def if_skipped_BNP(player, timeout_happened):
     player.skipped = timeout_happened
-    
 
 
 # PAGES
 class NonSkippedPage(Page):
-    def is_displayed(x): return not x.skipped
+    @staticmethod
+    def is_displayed(player): return not player.skipped
 
 
 class Video(NonSkippedPage):
     @staticmethod
     def get_timeout_seconds(player):
         return player.video_duration
+
     is_displayed = treatment_sorter
 
 
@@ -258,6 +266,7 @@ class Q(NonSkippedPage):
     @staticmethod
     def get_timeout_seconds(player):
         return 180
+
     form_model = 'player'
     checkboxes = [
         'treatment_q2',
@@ -272,7 +281,7 @@ class Q(NonSkippedPage):
         self._form_data = StarletteFormData(data)
         return super().post()
 
-    @ staticmethod
+    @staticmethod
     def is_displayed(player: Player):
         if player.skipped:
             return False
@@ -280,7 +289,7 @@ class Q(NonSkippedPage):
             return player.round_number == 1
         return player.round_number < C.NUM_ROUNDS
 
-    @ staticmethod
+    @staticmethod
     def get_form_fields(player):
         if player.treatment == C.CONTROL:
             return ['control_q1', 'control_q2']
@@ -294,6 +303,7 @@ class GameInstructions(Page):
     @staticmethod
     def get_timeout_seconds(player):
         return 300
+
     is_displayed = firstround
 
 
@@ -301,6 +311,7 @@ class GameQ(Page):
     @staticmethod
     def get_timeout_seconds(player):
         return 240
+
     is_displayed = firstround
     form_model: str = 'player'
     form_fields = ['q1', 'q2', 'q3']
@@ -325,6 +336,7 @@ class AfterQWP(WaitPage):
     is_displayed = treatment_sorter
     body_text = 'Please wait while other participants watch the video and answer the questions'
 
+
 # PAGES
 
 
@@ -343,7 +355,16 @@ def q3_error_message(player, value):
         return C.WRONG_ANSWER
 
 
+class Consent(Page):
+    timeout_seconds = 60
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.round_number == 1
+
+
 page_sequence = [
+    Consent,
     GameInstructions,
     GameQ,
     Video,
