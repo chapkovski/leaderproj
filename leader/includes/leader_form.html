@@ -78,7 +78,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">No (cancel)</button>
-                    <button type="button" class="btn btn-primary" @click="handleFinal">Yes (Submit)</button>
+                    <button type="button" class="btn btn-primary"  data-dismiss="modal"  @click="handleFinal">Yes (Submit)</button>
                 </div>
             </div>
         </div>
@@ -100,10 +100,12 @@
         methods: {
             handleFinal() {
                 console.debug('do we reach? ', this.prediction)
-               {#if (String(this.prediction).trim() === '') return;#}
+                if (String(this.prediction).trim() === '') return;
                 sendValue({prediction: this.prediction});
                 this.prediction = '';
-                $('#confirmModal').modal('hide');
+                this.$nextTick(() => {
+                    $('#confirmModal').modal('hide');
+                });
             }
         },
         compilerOptions: {
@@ -111,7 +113,8 @@
         }
     }).mount('#app');
 
-    function sendValue(data) {
-        console.log("Prediction submitted:", data);
+    function sendValue(prediction) {
+        sendChat('Prediction submitted.')
+        liveSend(prediction);
     }
 </script>
