@@ -25,7 +25,7 @@ def creating_session(subsession):
     for p in subsession.get_players():
         p.participant.vars['treatment'] = subsession.session.config.get('treatment', C.CONTROL)
         p.endowment = subsession.session.config.get('endowment', 1)
-    subsession.true_value = C.TO_PREDICT[subsession.round_number - 1]
+    subsession.true_value = round(C.TO_PREDICT[subsession.round_number - 1],2)
 
 
 class C(BaseConstants):
