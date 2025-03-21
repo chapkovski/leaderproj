@@ -2,128 +2,116 @@
 
 </div>
 <script>
-  let socket, nickname;
+    let socket, nickname;
 
-  const sendChat = (msg) => {
-    var data = {
-      'body': msg,
-      'nickname_signed': nickname
-    };
+    const sendChat = (msg) => {
+        var data = {
+            'body': msg,
+            'nickname_signed': nickname
+        };
 
-    socket.send(JSON.stringify(data));
-  }
-  $(function () {
+        socket.send(JSON.stringify(data));
+    }
+    $(function () {
 
-    var varsFromDjango = {{ chat_vars_for_js.chat_vars_for_js| json
-  }};
-  var channel = varsFromDjango.channel;
-  var socketPath = varsFromDjango.socket_path;
-  console.debug(socketPath)
-  var participantID = varsFromDjango.participant_id;
-  var nickname_i_see_for_myself = varsFromDjango.nickname_i_see_for_myself;
+        var varsFromDjango = {{ chat_vars_for_js.chat_vars_for_js| json }};
+        var channel = varsFromDjango.channel;
+        var socketPath = varsFromDjango.socket_path;
+        console.debug(socketPath)
+        var participantID = varsFromDjango.participant_id;
+        var nickname_i_see_for_myself = varsFromDjango.nickname_i_see_for_myself;
 
-  var $chatWidget = $('#_js-otree-chat-' + channel);
+        var $chatWidget = $('#_js-otree-chat-' + channel);
 
-  var $messageInput = $chatWidget.find('input');
-  socket = makeReconnectingWebSocket(socketPath);
-  nickname = varsFromDjango.nickname_signed;
-  console.debug('JOPA', varsFromDjango)
-    
-})
+        var $messageInput = $chatWidget.find('input');
+        socket = makeReconnectingWebSocket(socketPath);
+        nickname = varsFromDjango.nickname_signed;
+
+    })
 </script>
 
-<script type="module">
-  import { createSignal, createEffect } from "https://cdn.skypack.dev/solid-js@1.2.6";
-  import { render } from "https://cdn.skypack.dev/solid-js@1.2.6/web";
-  import html from "https://cdn.skypack.dev/solid-js@1.2.6/html";
-  function sendValue(prediction) {
-    sendChat('Prediction submitted.')
-    liveSend(prediction);
-  }
-  const App = () => {
-    
-    const [modal, setModal] = createSignal(null);
-    const [newPrediction, setPrediction] = createSignal('');
-    const handleSubmit = (e) => {
-      
-      
-      modal().show();
-      
-    }
-    const handleFinal = (e) => {
-      
-      sendValue({ prediction: newPrediction() })
-      $('#confirmModal').modal('hide')
-      setPrediction('0')
-      console.debug('red sent',e)
-      
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap 4 JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Bootstrap 4 CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-    }
-    createEffect(() => {
-
-      setModal(new bootstrap.Modal('#confirmModal', {}))
-
-
-    });
-    const onChange = (v) => {
-      setPrediction(v)
-
-      setDisabled(['', null, undefined].includes(v))
-
-    }
-    const [isDisabled, setDisabled] = createSignal(true)
-    return html`
-            <form class="otree-form" method="post" role="form" id="form" autocomplete="off"
-            onSubmit=""
-            >
-
-            <div class="modal" tabindex="-1" id="confirmModal" >
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title">Attention!</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <p>
-                      Are you sure you would like to submit this prediction: <b>${newPrediction}</b>?
-                      </p>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No (cancel)</button>
-                    <button type="button" class="btn btn-primary" onClick="${handleFinal}">Yes (Submit the answer)</button>
-                  </div>
-                </div>
-              </div>
+<div id="app">
+    <form @submit.prevent>
+        <li class="list-group-item d-flex mb-3 row">
+            <label for="inputPrediction" class="col-sm-6 col-form-label">Your prediction</label>
+            <div class="col-sm-6 d-flex">
+                <input type="number"
+                       class="form-control"
+                       id="inputPrediction"
+                       name="prediction"
+                       required
+                       v-model="prediction">
+                <button class="btn btn-primary mx-3"
+                        type="button"
+                        :disabled="isDisabled"
+                        data-toggle="modal"
+                        data-target="#confirmModal">
+                    Submit
+                </button>
             </div>
-                <li class="list-group-item d-flex mb-3 row">
+        </li>
+        <li class="list-group-item row small fst-italic fw-bold">
+            (At the box above you can submit as many predictions as you want)
+        </li>
+    </form>
 
-                    <label for="inputPrediction" class="col-sm-6 col-form-label">Your prediction</label>
-                    <div class="col-sm-6 d-flex">
-                        <input type="number"
-                        
-                               class="form-control"
-                               id="inputPrediction"
-                               name="prediction"
-                               required
-                               value=${newPrediction()}
-                               onInput=${(e) => onChange(e.currentTarget.value)}
-                        >
-                        <button class="btn btn-primary mx-3" type="button"
-                        disabled=${isDisabled}
-                        onClick=${handleSubmit}
-                        >Submit</button>
-                    </div>
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmLabel">Attention!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to submit this prediction: <b>${ prediction }$</b>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No (cancel)</button>
+                    <button type="button" class="btn btn-primary" @click="handleFinal">Yes (Submit)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                </li>
-                 <li class="list-group-item  row small fst-italic fw-bold">
-                 (At the box above you can submit as many predictions as you want)
-                 </li>
-            </form>
-        `;
-  }
+<script>
+    Vue.createApp({
+        data() {
+            return {
+                prediction: ''
+            };
+        },
+        computed: {
+            isDisabled() {
+                return String(this.prediction).trim() === '';
+            }
+        },
+        methods: {
+            handleFinal() {
+                console.debug('do we reach? ', this.prediction)
+               {#if (String(this.prediction).trim() === '') return;#}
+                sendValue({prediction: this.prediction});
+                this.prediction = '';
+                $('#confirmModal').modal('hide');
+            }
+        },
+        compilerOptions: {
+            delimiters: ['${', '}$']
+        }
+    }).mount('#app');
 
-
-
-  render(App, document.getElementById('mainsolid'));
+    function sendValue(data) {
+        console.log("Prediction submitted:", data);
+    }
 </script>

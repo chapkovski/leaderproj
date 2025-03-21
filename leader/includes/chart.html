@@ -15,9 +15,9 @@
                 legend: {
                     enabled: true,
                     layout: 'vertical', // Options: 'horizontal' or 'vertical'
-                    align: 'right',      // Positioning: 'left', 'center', 'right'
+                    align: 'left',      // Positioning: 'left', 'center', 'right'
                     verticalAlign: 'top', // 'top', 'middle', 'bottom'
-                    x: -10, // Adjust horizontal positioning (move left/right)
+                    x: 100, // Adjust horizontal positioning (move left/right)
                     y: 50,  // Adjust vertical positioning (move up/down)
                     floating: true, // Allows the legend to be placed over the chart
                     backgroundColor: 'rgba(255, 255, 255, 0.8)', // Optional: Adds a transparent white background for better visibility
@@ -59,7 +59,7 @@
                         text: "sales $M",
                     },
                     labels: {
-                        format: "{value}",
+                        format: "{value:.0f}" //
                     },
 
                     lineWidth: 2,
@@ -67,7 +67,7 @@
 
                 tooltip: {
                     headerFormat: "<b>{series.name}</b><br/>",
-                    pointFormat: " {point.y}",
+                    pointFormat: " {point.y:.0f}"
                 },
                 plotOptions: {
                     series: {

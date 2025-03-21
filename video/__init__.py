@@ -364,10 +364,10 @@ class Consent(Page):
 
 
 page_sequence = [
-    Consent,
-    GameInstructions,
-    GameQ,
-    Video,
-    Q,
-    Skipped
+    # Consent,
+    # GameInstructions,
+    # GameQ,
+    # Video,
+    # Q,
+    # Skipped
 ]
