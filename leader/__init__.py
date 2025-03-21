@@ -43,7 +43,7 @@ class C(BaseConstants):
     TO_PREDICT = graph_data[MAX_OLD_VALUES:]
     GRAPHS_DATA = graph_data[:MAX_OLD_VALUES]
     LAST_ITEM = GRAPHS_DATA[-1]
-    NUM_ROUNDS = 1
+    NUM_ROUNDS = 6
     WRONG_ANSWER = 'Please re-read the instructions and check the answer'
 
 
@@ -326,15 +326,15 @@ class big5Page(Page):
 
 
 page_sequence = [
-    # FirstWP,
-    # IntroRound,
-    # BeforeDecisionWP,
-    # DecisionPage,
-    # BeforeLeaderDecisionWP,
-    # LeaderDecisionPage,
-    # ResultsWaitPage,
-    # Results,
-    # BeforeFinalResultsWP,
+    FirstWP,
+    IntroRound,
+    BeforeDecisionWP,
+    DecisionPage,
+    BeforeLeaderDecisionWP,
+    LeaderDecisionPage,
+    ResultsWaitPage,
+    Results,
+    BeforeFinalResultsWP,
     big5Page,
     FinalResults
 ]

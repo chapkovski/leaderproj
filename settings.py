@@ -6,8 +6,8 @@ SESSION_CONFIGS = [
     dict(
         name='leader_baseline',
         app_sequence=[
-            # 'video',
-            # 'leader',
+            'video',
+            'leader',
              'q',
             ],
         treatment='control',
