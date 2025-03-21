@@ -113,7 +113,6 @@ class FinalForProlific(Page):
 
 
 page_sequence = [
-    big5Page,
-      MindfulPage,
+
     FinalForProlific
 ]
