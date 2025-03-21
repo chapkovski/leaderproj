@@ -25,7 +25,7 @@ def creating_session(subsession):
     for p in subsession.get_players():
         p.participant.vars['treatment'] = subsession.session.config.get('treatment', C.CONTROL)
         p.endowment = subsession.session.config.get('endowment', 1)
-    subsession.true_value = round(C.TO_PREDICT[subsession.round_number - 1],2)
+    subsession.true_value = round(C.TO_PREDICT[subsession.round_number - 1], 2)
 
 
 class C(BaseConstants):
@@ -43,7 +43,7 @@ class C(BaseConstants):
     TO_PREDICT = graph_data[MAX_OLD_VALUES:]
     GRAPHS_DATA = graph_data[:MAX_OLD_VALUES]
     LAST_ITEM = GRAPHS_DATA[-1]
-    NUM_ROUNDS = 6
+    NUM_ROUNDS = 1
     WRONG_ANSWER = 'Please re-read the instructions and check the answer'
 
 
@@ -63,7 +63,7 @@ class Group(BaseGroup):
     def deviation(self):
         final_prediction = self.field_maybe_none('final_prediction') or 0
 
-        return final_prediction - self.subsession.true_value
+        return round(final_prediction - self.subsession.true_value, 2)
 
     @property
     def rel_deviation(self):
@@ -75,7 +75,7 @@ class Group(BaseGroup):
 
     @property
     def abs_deviation(self):
-        return abs(self.deviation)
+        return round(abs(self.deviation), 2)
 
     final_prediction = models.IntegerField(
         label='Look at the predictions made by you at the discussion stage and make the final prediction for this round:')
@@ -138,7 +138,6 @@ class Player(BasePlayer):
 
 class IntroRound(Page):
     timeout_seconds = 60
-
 
 
 class BeforeDecisionWP(MWP):
@@ -327,15 +326,15 @@ class big5Page(Page):
 
 
 page_sequence = [
-    FirstWP,
-    IntroRound,
-    BeforeDecisionWP,
-    DecisionPage,
-    BeforeLeaderDecisionWP,
-    LeaderDecisionPage,
-    ResultsWaitPage,
-    Results,
-    BeforeFinalResultsWP,
+    # FirstWP,
+    # IntroRound,
+    # BeforeDecisionWP,
+    # DecisionPage,
+    # BeforeLeaderDecisionWP,
+    # LeaderDecisionPage,
+    # ResultsWaitPage,
+    # Results,
+    # BeforeFinalResultsWP,
     big5Page,
     FinalResults
 ]
