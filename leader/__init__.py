@@ -6,8 +6,11 @@ from otree.models import Participant
 from typing import List
 from otree.database import dbq
 from video.methods import wpmethod
+from starlette.responses import RedirectResponse
 from pprint import pprint
+import math
 import json
+import time
 
 with open('leader/data/graph.csv') as csvfile:
     graph_data = [float(i[0]) for i in csv.reader(csvfile)]
@@ -29,6 +32,7 @@ def creating_session(subsession):
 
 
 class C(BaseConstants):
+    THRESHOLD_SEC = 18
     NAME_IN_URL = 'leader'
     PLAYERS_PER_GROUP = 3
     CONTROL = 'control'
@@ -99,6 +103,7 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
+    wait_too_long = models.BooleanField()
     endowment = models.CurrencyField()
     inner_role = models.StringField()
 
@@ -245,17 +250,40 @@ def set_payoffs(group):
         p.payoff = p.endowment * (1 - mape)
 
 
+
+
+
 class FirstWP(WaitPage):
-    body_text = """<h2>Please be patient: it may take up to <span class="text-danger">5 minutes</span>
-    till your partners reach this page and you will be able to proceed further.</h2> 
-    <h3>If you have any questions, please communicate with us via Prolific or email: <a href="mailto:filipp.chapkovskii@uni-due.de">filipp.chapkovskii@uni-due.de</a></h3>"""
+    @property
+    def body_text(self):
+        max_wait_minutes = math.ceil(C.THRESHOLD_SEC / 60)
+        return f"""<h2>Please be patient: it may take up to <span class="text-danger">{max_wait_minutes} minute{'s' if max_wait_minutes > 1 else ''}</span>
+            till your partners reach this page and you will be able to proceed further.</h2> 
+            <h3>If you have any questions, please communicate with us via Prolific or email: <a href="mailto:filipp.chapkovskii@uni-due.de">filipp.chapkovskii@uni-due.de</a></h3>"""
+
     group_by_arrival_time = True
     template_name = 'video/templates/WaitPage.html'
     vars_for_template = vars_for_wp
 
     @staticmethod
     def is_displayed(player):
-        return player.round_number == 1
+        if player.round_number > 1:
+            return False
+        now = time.time()
+
+        # Save timestamp at first arrival (only once)
+        player.participant.vars.setdefault('first_arrival_time', now)
+        print(f"[{player.participant.code}] First arrival recorded at {now}")
+
+        elapsed = now - player.participant.vars['first_arrival_time']
+        print(f"[{player.participant.code}] Elapsed time on wait page: {elapsed:.1f} seconds")
+
+        # Threshold in seconds (3 minutes)
+        if elapsed > C.THRESHOLD_SEC:
+            print(f"[{player.participant.code}] Waited too long, marking to skip wait page")
+            player.wait_too_long = True  # Add this field to Player model
+            return False  # Skip this WP
+        return True
 
     @staticmethod
     def after_all_players_arrive(group: Group):
@@ -264,6 +292,15 @@ class FirstWP(WaitPage):
             for i in range(1, C.NUM_ROUNDS + 1):
                 p.in_round(i).inner_role = inner_role
             p.participant.vars['role'] = inner_role
+
+
+class WaitedTooLongForProlific(Page):
+
+    def is_displayed(player):
+        return player.wait_too_long
+
+    def get(self):
+        return RedirectResponse(self.session.config.get('prolific_redirect_url'))
 
 
 # PAGES
@@ -327,6 +364,7 @@ class big5Page(Page):
 
 page_sequence = [
     FirstWP,
+    WaitedTooLongForProlific,
     IntroRound,
     BeforeDecisionWP,
     DecisionPage,
