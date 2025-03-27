@@ -6,7 +6,7 @@ from otree.forms.widgets import BaseWidget
 from otree.templating import render
 from wtforms.widgets import CheckboxInput
 from otree.api import *
-from otree.api import WaitPage as OWaitPage
+from otree.api import WaitPage as OWaitPage, Page as OPage
 from otree.database import dbq
 from starlette.templating import Jinja2Templates
 import jinja2
@@ -27,7 +27,10 @@ templateEnv = jinja2.Environment(loader=templateLoader)
 
 
 # ENDDEBUG
-
+class Page(OPage):
+    @staticmethod
+    def before_next_page(player, timeout_happened):
+        player.skipped = timeout_happened
 
 def creating_session(subsession):
     for p in subsession.get_players():
@@ -242,8 +245,6 @@ def is_skipped(player: Player):
     return player.skipped
 
 
-def if_skipped_BNP(player, timeout_happened):
-    player.skipped = timeout_happened
 
 
 # PAGES
@@ -261,7 +262,6 @@ class Video(NonSkippedPage):
 
 
 class Q(NonSkippedPage):
-    before_next_page = if_skipped_BNP
 
     @staticmethod
     def get_timeout_seconds(player):

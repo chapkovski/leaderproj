@@ -32,7 +32,7 @@ def creating_session(subsession):
 
 
 class C(BaseConstants):
-    THRESHOLD_SEC = 18
+    THRESHOLD_SEC = 10*60
     NAME_IN_URL = 'leader'
     PLAYERS_PER_GROUP = 3
     CONTROL = 'control'

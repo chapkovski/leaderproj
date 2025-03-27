@@ -6,7 +6,7 @@ SESSION_CONFIGS = [
     dict(
         name='leader_baseline',
         app_sequence=[
-            # 'video',
+            'video',
             'leader',
              'q',
             ],
@@ -45,7 +45,7 @@ SESSION_CONFIG_DEFAULTS = dict(
     other_round_minutes=3,
     endowment=5,
     prolific_redirect_url='https://app.prolific.co/submissions/complete?cc=C1N6GE6V',
-    prolific_timeout_url='https://app.prolific.co/submissions/complete?cc=C1FO9YG3'
+    prolific_timeout_url='https://app.prolific.co/submissions/complete?cc=SKIPPED'
 )
 
 PARTICIPANT_FIELDS = []
