@@ -103,7 +103,7 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
-    wait_too_long = models.BooleanField()
+    wait_too_long = models.BooleanField(initial=False)
     endowment = models.CurrencyField()
     inner_role = models.StringField()
 
