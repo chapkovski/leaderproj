@@ -253,7 +253,7 @@ class NonSkippedPage(Page):
     def is_displayed(player): return not player.skipped
 
 
-class Video(NonSkippedPage):
+class Video(OPage):
     @staticmethod
     def get_timeout_seconds(player):
         return player.video_duration
@@ -328,8 +328,8 @@ class GameQ(Page):
 class Skipped(Page):
     is_displayed = is_skipped
 
-    def get(self):
-        return RedirectResponse(self.session.config.get('prolific_timeout_url'))
+    # def get(self):
+    #     return RedirectResponse(self.session.config.get('prolific_timeout_url'))
 
 
 class AfterQWP(WaitPage):
