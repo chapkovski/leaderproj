@@ -43,7 +43,7 @@ SESSION_CONFIG_DEFAULTS = dict(
     real_world_currency_per_point=1.00, participation_fee=0.00, doc="",
     round_one_minutes=10,
     other_round_minutes=3,
-    endowment=5,
+    endowment=2,
     prolific_redirect_url='https://app.prolific.co/submissions/complete?cc=C1N6GE6V',
     prolific_timeout_url='https://app.prolific.co/submissions/complete?cc=SKIPPED'
 )
