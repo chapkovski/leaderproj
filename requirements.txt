@@ -1,4 +1,4 @@
-otree==5.8.0b2
+otree==5.11.1
 psycopg2>=2.8.4
 Jinja2==2.11.3
 MarkupSafe==2.0.1
