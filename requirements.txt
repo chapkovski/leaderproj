@@ -1,5 +1,5 @@
 otree==5.11.1
 psycopg2>=2.8.4
 Jinja2==2.11.3
-MarkupSafe==2.0.1
-starlette==0.18.0
+#MarkupSafe==2.0.1
+#tarlette==0.18.0
