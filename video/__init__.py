@@ -55,6 +55,7 @@ def vars_for_wp(player):
 
 
 class WaitPage(OWaitPage):
+    countdown=False
     template_name = 'video/templates/WaitPage.html'
     # live_method = wpmethod
 

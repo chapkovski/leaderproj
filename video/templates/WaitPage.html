@@ -12,7 +12,7 @@
 <div class="alert alert-warning lead fw-bold text-center">You need to wait for
     <span id="num-left">{{ num_left }}</span> more participant<span id="num-left-ending"></span>.
 </div>
-
+{{ if view.countdown }}
 <div class="alert alert-danger text-center mt-4">
     <strong>Time left before redirect:</strong>
     <span id="countdown">{{ seconds_left }}</span> seconds
@@ -49,4 +49,5 @@
         window.location.href = window.location.pathname;
     }, (5 + Math.random() * 10) * SECOND);
 </script>
+{{ endif }}
 {{ endblock }}

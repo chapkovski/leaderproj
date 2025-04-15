@@ -32,7 +32,7 @@ def creating_session(subsession):
 
 
 class C(BaseConstants):
-    THRESHOLD_SEC = 10*60
+    THRESHOLD_SEC = 10 * 60
     NAME_IN_URL = 'leader'
     PLAYERS_PER_GROUP = 3
     CONTROL = 'control'
@@ -226,6 +226,7 @@ class Results(Page):
 
 
 class BeforeFinalResultsWP(WaitPage):
+    countdown = False
     template_name = 'video/templates/WaitPage.html'
     vars_for_template = vars_for_wp
 
@@ -250,10 +251,9 @@ def set_payoffs(group):
         p.payoff = p.endowment * (1 - mape)
 
 
-
-
-
 class FirstWP(WaitPage):
+    countdown = True
+
     @property
     def body_text(self):
         max_wait_minutes = math.ceil(C.THRESHOLD_SEC / 60)
